@@ -48,7 +48,12 @@ export function weekStartFor(date: Date): Date {
 /** Round a datetime up to the next scheduling boundary. */
 export function ceilToSlot(date: Date): Date {
   const step = SLOT_MINUTES * 60_000;
-  return new Date(Math.ceil(date.getTime() / step) * step);
+  // Align to the student's wall clock, not UTC's half-hour boundaries.
+  // Adding elapsed milliseconds also preserves the selected occurrence of a
+  // repeated DST hour instead of reconstructing an ambiguous local datetime.
+  const remainder = (date.getMinutes() % SLOT_MINUTES) * 60_000 +
+    date.getSeconds() * 1000 + date.getMilliseconds();
+  return new Date(date.getTime() + (remainder === 0 ? 0 : step - remainder));
 }
 
 export function toDateKey(date: Date): string {

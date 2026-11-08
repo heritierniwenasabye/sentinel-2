@@ -46,7 +46,7 @@ and **no data leaves the device**.
 ## First run and demo data
 
 A new workspace starts **empty** — no courses, no Example 101, no fake charts. Empty states explain
-what to do and provide the action. The setup dialog can be skipped and reopened by clearing data.
+what to do and provide the action. The setup dialog can be skipped. Use a fresh browser profile to replay onboarding; clearing workspace data retains onboarding completion.
 
 The demonstration set (fictional student **Alex Morgan**: four courses, nine assignments, classes,
 campus shifts, gym, rest, a week of screen time) is installed only from
@@ -63,7 +63,7 @@ npm ci
 npm run dev        # http://localhost:3000
 npm run typecheck  # tsc --noEmit (strict)
 npm run test       # vitest run
-npx playwright install chromium # one-time browser setup (Node 20+)
+npx playwright install chromium # one-time browser setup (Node 22.12+)
 npm run test:e2e   # real Chromium student workflows and 30 layout combinations
 npm run build      # typecheck + production bundle in dist/
 npm run preview    # serve the production build
