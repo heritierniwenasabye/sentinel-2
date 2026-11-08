@@ -132,12 +132,20 @@ export interface UserPreferences {
   onboardingCompleted: boolean;
 }
 
+export interface UsageGoal {
+  id: string;
+  app: string;
+  dailyLimitMinutes: number;
+}
+
 export interface AppData {
   version: 3;
   courses: Course[];
   tasks: Task[];
   commitments: Commitment[];
   usage: DigitalUsageEntry[];
+  /** Optional for backwards-compatible schema-3 imports. */
+  usageGoals?: UsageGoal[];
   preferences: UserPreferences;
   demoLoaded: boolean;
 }

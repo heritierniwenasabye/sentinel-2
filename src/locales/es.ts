@@ -1,6 +1,48 @@
 import type { Translation } from '@/locales/en';
 
 const es: Translation = {
+  goals: {
+    "title": "Metas de uso",
+    "description": "Límites diarios basados solo en registros manuales. Sin registros, el uso es desconocido, no cero.",
+    "add": "Añadir meta de uso",
+    "edit": "Editar meta de uso",
+    "empty": "Aún no hay metas de uso.",
+    "app": "Aplicación",
+    "limit": "Límite diario (minutos)",
+    "limitValue": "Límite diario: {{minutes}} min",
+    "missing": "No hay registros de hoy. Uso desconocido.",
+    "over": "{{used}} registradas hoy; {{remaining}} por encima del límite.",
+    "progress": "{{used}} registradas hoy; {{remaining}} por debajo del límite.",
+    "invalid": "Introduce una aplicación sin meta existente y un límite entero de 1 a 1440 minutos.",
+    "deleteTitle": "¿Eliminar meta de uso?",
+    "deleteBody": "¿Eliminar la meta de {{app}}? Se conservan los registros."
+},
+  recovery: {
+    previous: "Descargar copia original anterior",
+    reload: "Recargar página",
+    "title": "Recuperación de datos",
+    "body": "Se conservaron datos dañados. Descarga primero la copia original. La validación no cambia nada. La restauración combina los registros válidos y conserva los datos actuales y la copia.",
+    "download": "Descargar copia original",
+    "validate": "Validar copia",
+    "invalid": "La copia no se puede restaurar como JSON de SENTINEL. Conserva el archivo para recuperación manual.",
+    "restore": "Restaurar registros válidos",
+    "confirmTitle": "¿Restaurar los registros recuperados?",
+    "confirmBody": "Se combinarán los registros válidos. Los identificadores existentes tienen prioridad. Los registros inválidos se muestran y se omiten. Se conserva la copia original.",
+    "limits": "Archivos: máximo 5 MiB y 10 000 registros.",
+    "readError": "No se pudo leer el archivo. Vuelve a seleccionarlo.",
+    "found": "Hay una copia de recuperación en Ajustes.",
+    "loading": "Cargando página…"
+},
+  importErrors: {
+    "duplicate": "Se omitió un registro duplicado.",
+    "date": "Fecha u hora inválida. Comprueba el día y el orden de inicio y fin.",
+    "duration": "Duración o progreso inválido. Comprueba el rango de minutos.",
+    "id": "Identificador ausente o inválido.",
+    "relationship": "Se desvinculó la referencia a un curso desconocido.",
+    "format": "Formato, columnas o campos entre comillas inválidos.",
+    "version": "Estos datos requieren una versión más reciente de SENTINEL.",
+    "record": "Registro o campo obligatorio inválido. Revisa el archivo antes de importarlo."
+},
   app: {
     name: 'SENTINEL',
     version: '2.0',
@@ -146,7 +188,7 @@ const es: Translation = {
       subtitle: 'Las cinco tareas más cercanas.',
       empty: 'No hay entregas próximas.',
       emptyHint: 'Añade una tarea con fecha límite para verla aquí.',
-      remaining: 'Restante',
+      remaining: "Sin programar",
       due: 'Entrega {{date}}',
       overdue: 'Atrasada',
       noCourse: 'Sin curso',
@@ -201,6 +243,7 @@ const es: Translation = {
     commitmentsSubtitle: 'Clases, turnos, citas, tiempo personal y descanso.',
     commitmentsEmpty: 'No hay compromisos esta semana.',
     commitmentsEmptyHint: 'Añade una clase, un turno o una cita.',
+    laterWork: "Las tareas posteriores no se incluyen en este plan ni en sus totales. Avanza a otra semana para planificarlas; siguen pendientes.",
     scheduleScope:
       'Los bloques de estudio cubren las tareas que vencen esta semana y en los próximos siete días.',
     unscheduledReasonOverdue: 'La fecha límite ya pasó',
@@ -418,6 +461,7 @@ const es: Translation = {
     notEnough: 'Todavía no hay datos suficientes',
   },
   simulation: {
+    weekScope: "Comparando esta semana: {{start}}–{{end}}. Reiniciar descarta la vista previa; Aplicar guarda solo tras confirmar.",
     title: 'Laboratorio de simulación',
     subtitle: 'Explora decisiones antes de que cambien tu semana.',
     intro:
@@ -452,8 +496,7 @@ const es: Translation = {
       studyStart: 'Estudio disponible desde',
       studyEnd: 'Estudio disponible hasta',
       reduction: 'Reducción semanal (minutos)',
-      reductionHint:
-        'Solo se pueden recuperar minutos discrecionales (social y entretenimiento).',
+      reductionHint: "Solo se pueden reducir los registros discrecionales de redes sociales, entretenimiento y otros.",
       allocate: 'Añadir el tiempo recuperado a mi capacidad de estudio',
       allocateHint:
         'Solo se añaden bloques completos de 30 minutos, y únicamente si hay espacio libre.',
@@ -483,6 +526,8 @@ const es: Translation = {
         'Reducir el tiempo de pantalla {{minutes}} minutos por semana y asignarlo al estudio',
     },
     compare: {
+      fixed: "Compromisos fijos",
+      noStudy: "No hay estudio planificado en ninguno de los dos planes esta semana.",
       title: 'Comparación',
       subtitle: 'Ambos planes usan las mismas reglas y preferencias.',
       baseline: 'Plan actual',
@@ -496,7 +541,7 @@ const es: Translation = {
       minutesValue: '{{minutes}} min',
       scoreValue: '{{score}} / 100',
       chartTitle: 'Carga diaria',
-      chartSubtitle: 'Minutos de estudio planificados por día.',
+      chartSubtitle: "Horas de estudio planificadas por día.",
       chartBaseline: 'Actual',
       chartSimulated: 'Simulado',
       chartEmpty: 'No hay diferencia en el estudio planificado entre los planes.',
@@ -511,8 +556,7 @@ const es: Translation = {
       apply: 'Aplicar escenario',
       reset: 'Reiniciar simulación',
       applyTitle: '¿Aplicar este escenario?',
-      applyDescription:
-        'Estos cambios se escribirán en tus datos locales. Aún podrás editarlos o deshacerlos.',
+      applyDescription: "Confirma para guardar los cambios en este navegador. Reiniciar solo descarta una vista previa no aplicada; no hay deshacer automático tras aplicar.",
       applyConfirm: 'Aplicar cambios',
       cancel: 'Seguir simulando',
       applied: 'Escenario aplicado',
@@ -521,6 +565,8 @@ const es: Translation = {
         'La reducción del tiempo de pantalla es hipotética. Solo se guarda la capacidad asignada.',
     },
     explanations: {
+      fixedUp: "Los compromisos fijos ocupan {{minutes}} minutos más esta semana.",
+      fixedDown: "Los compromisos fijos ocupan {{minutes}} minutos menos esta semana.",
       noScenario: 'Añade un cambio para ver cómo afecta a tu semana.',
       plannedUp: 'El plan simulado programa {{minutes}} minutos más de estudio.',
       plannedDown: 'El plan simulado programa {{minutes}} minutos menos de estudio.',
@@ -537,10 +583,11 @@ const es: Translation = {
       recovered: 'Se recuperan hasta {{minutes}} minutos discrecionales por semana.',
       infeasible:
         'Este cambio hace inviable la semana: parte del trabajo ya no cabe.',
-      noChange: 'Este cambio no altera ninguna métrica calculada.',
+      noChange: "El estudio planificado, las tareas sin programar, la capacidad disponible y el número de conflictos no cambian.",
     },
   },
   habits: {
+    logScrollHint: "Desplázate dentro del registro para ver todas las entradas.",
     title: 'Hábitos digitales',
     subtitle: 'Entiende a dónde va tu tiempo de pantalla.',
     disclaimer:
@@ -743,7 +790,7 @@ const es: Translation = {
       maxDaily: 'Estudio diario máximo (minutos)',
       maxDailyHint: 'Sumando todas las tareas de un día.',
       minBreak: 'Descanso mínimo (minutos)',
-      minBreakHint: 'Se inserta tras 90 minutos de estudio continuo.',
+      minBreakHint: "Entre bloques de estudio, también al cambiar de tarea.",
       sleepStart: 'Sueño o no disponible desde',
       sleepEnd: 'Hasta',
       sleepHint: 'No se coloca ningún bloque de estudio dentro de esta ventana.',
@@ -774,14 +821,14 @@ const es: Translation = {
       title: 'Gestión de datos',
       subtitle: 'Todo permanece en este navegador. No se sube nada.',
       export: 'Exportar datos (JSON)',
-      exportHint: 'Incluye tareas, compromisos, tiempo de pantalla y preferencias.',
+      exportHint: "Incluye cursos, tareas, compromisos, tiempo de pantalla, metas y preferencias.",
       import: 'Importar datos (JSON)',
       importHint: 'Los registros no válidos se omiten y se informan.',
       demo: 'Cargar datos de demostración',
       demoHint: 'Reemplaza los datos actuales por el conjunto de Alex Morgan.',
       clear: 'Borrar todos los datos',
-      clearHint: 'Elimina todo lo que SENTINEL guardó en este navegador.',
-      cleared: 'Se eliminaron todos los datos locales',
+      clearHint: "Elimina los registros y restablece las preferencias de estudio. Se conservan apariencia, idioma y copias de recuperación.",
+      cleared: "Registros del espacio eliminados",
       imported: 'Datos importados',
       importedWithErrors: 'Importado con {{count}} registros omitidos',
       exported: 'Exportación descargada',
@@ -790,8 +837,7 @@ const es: Translation = {
       demoBody:
         'Las tareas, compromisos, tiempo de pantalla y preferencias actuales se reemplazarán por la demostración de Alex Morgan. Exporta primero si quieres conservarlos.',
       clearTitle: '¿Borrar todos los datos?',
-      clearBody:
-        'Esto elimina cada tarea, compromiso, entrada de tiempo de pantalla y preferencia guardada en este navegador. No se puede deshacer.',
+      clearBody: "¿Eliminar cursos, tareas, compromisos, uso y metas, y restablecer las preferencias de estudio? Se conservan apariencia, idioma y copias de recuperación. Exporta primero; no hay deshacer automático.",
       importTitle: '¿Importar este archivo?',
       importBody:
         'Los datos importados reemplazan lo que está guardado actualmente en este navegador.',

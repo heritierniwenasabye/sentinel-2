@@ -1,6 +1,48 @@
 import type { Translation } from '@/locales/en';
 
 const fr: Translation = {
+  goals: {
+    "title": "Objectifs d’utilisation",
+    "description": "Limites quotidiennes calculées à partir de vos saisies manuelles. Sans saisie, l’utilisation est inconnue, pas nulle.",
+    "add": "Ajouter un objectif",
+    "edit": "Modifier l’objectif",
+    "empty": "Aucun objectif pour le moment.",
+    "app": "Application",
+    "limit": "Limite quotidienne (minutes)",
+    "limitValue": "Limite quotidienne : {{minutes}} min",
+    "missing": "Aucune saisie aujourd’hui. Utilisation inconnue.",
+    "over": "{{used}} enregistrées aujourd’hui ; {{remaining}} au-dessus de la limite.",
+    "progress": "{{used}} enregistrées aujourd’hui ; {{remaining}} sous la limite.",
+    "invalid": "Choisissez une application sans objectif existant et une limite entière de 1 à 1440 minutes.",
+    "deleteTitle": "Supprimer l’objectif ?",
+    "deleteBody": "Supprimer l’objectif de {{app}} ? Les saisies sont conservées."
+},
+  recovery: {
+    previous: "Télécharger la sauvegarde brute précédente",
+    reload: "Recharger la page",
+    "title": "Récupération des données",
+    "body": "Des données endommagées ont été préservées. Téléchargez d’abord la sauvegarde brute. La validation ne modifie rien. La restauration fusionne les éléments valides et conserve les données actuelles et la sauvegarde.",
+    "download": "Télécharger la sauvegarde brute",
+    "validate": "Valider la sauvegarde",
+    "invalid": "Cette sauvegarde ne peut pas être restaurée en JSON SENTINEL. Conservez le fichier pour une récupération manuelle.",
+    "restore": "Restaurer les éléments valides",
+    "confirmTitle": "Restaurer les éléments récupérés ?",
+    "confirmBody": "Les éléments valides seront fusionnés. Les identifiants existants sont prioritaires. Les éléments invalides sont signalés et ignorés. La sauvegarde brute est conservée.",
+    "limits": "Fichiers : 5 Mio et 10 000 éléments maximum.",
+    "readError": "Impossible de lire le fichier. Sélectionnez-le à nouveau.",
+    "found": "Une sauvegarde de récupération est disponible dans les paramètres.",
+    "loading": "Chargement de la page…"
+},
+  importErrors: {
+    "duplicate": "Élément en double ignoré.",
+    "date": "Date ou heure invalide. Vérifiez le jour et l’ordre du début et de la fin.",
+    "duration": "Durée ou progression invalide. Vérifiez les limites en minutes.",
+    "id": "Identifiant manquant ou invalide.",
+    "relationship": "La référence à un cours inconnu a été supprimée.",
+    "format": "Format, colonnes ou champs entre guillemets invalides.",
+    "version": "Ces données nécessitent une version plus récente de SENTINEL.",
+    "record": "Élément ou champ obligatoire invalide. Vérifiez le fichier avant de l’importer."
+},
   app: {
     name: 'SENTINEL',
     version: '2.0',
@@ -145,7 +187,7 @@ const fr: Translation = {
       subtitle: 'Les cinq devoirs les plus proches.',
       empty: 'Aucune échéance à venir.',
       emptyHint: 'Ajoutez une tâche avec une échéance pour la voir ici.',
-      remaining: 'Restant',
+      remaining: "Non planifié",
       due: 'Échéance {{date}}',
       overdue: 'En retard',
       noCourse: 'Sans cours',
@@ -200,6 +242,7 @@ const fr: Translation = {
     commitmentsSubtitle: 'Cours, services, rendez-vous, temps personnel et repos.',
     commitmentsEmpty: 'Aucun engagement cette semaine.',
     commitmentsEmptyHint: 'Ajoutez un cours, un service ou un rendez-vous.',
+    laterWork: "Les devoirs ultérieurs ne sont pas inclus dans ce plan ni ses totaux. Passez à une semaine ultérieure pour les planifier ; ils restent à terminer.",
     scheduleScope:
       'Les blocs d’étude couvrent les devoirs à rendre cette semaine et dans les sept jours suivants.',
     unscheduledReasonOverdue: 'Échéance déjà passée',
@@ -422,6 +465,7 @@ const fr: Translation = {
     notEnough: 'Pas encore assez de données',
   },
   simulation: {
+    weekScope: "Comparaison de cette semaine : {{start}}–{{end}}. Réinitialiser abandonne l’aperçu ; Appliquer enregistre après confirmation.",
     title: 'Laboratoire de simulation',
     subtitle: 'Explorez vos décisions avant qu’elles ne changent votre semaine.',
     intro:
@@ -456,8 +500,7 @@ const fr: Translation = {
       studyStart: 'Étude disponible à partir de',
       studyEnd: 'Étude disponible jusqu’à',
       reduction: 'Réduction hebdomadaire (minutes)',
-      reductionHint:
-        'Seules les minutes discrétionnaires (social, divertissement) peuvent être récupérées.',
+      reductionHint: "Seules les saisies discrétionnaires des catégories social, divertissement et autre peuvent être réduites.",
       allocate: 'Ajouter le temps récupéré à ma capacité d’étude',
       allocateHint:
         'Seuls des blocs entiers de 30 minutes sont ajoutés, et seulement s’il reste de la place libre.',
@@ -487,6 +530,8 @@ const fr: Translation = {
         'Réduire le temps d’écran de {{minutes}} minutes par semaine et l’affecter à l’étude',
     },
     compare: {
+      fixed: "Engagements fixes",
+      noStudy: "Aucune étude n’est planifiée dans les deux plans cette semaine.",
       title: 'Comparaison',
       subtitle: 'Les deux plans utilisent les mêmes règles et préférences.',
       baseline: 'Plan actuel',
@@ -500,7 +545,7 @@ const fr: Translation = {
       minutesValue: '{{minutes}} min',
       scoreValue: '{{score}} / 100',
       chartTitle: 'Charge quotidienne',
-      chartSubtitle: 'Minutes d’étude planifiées par jour.',
+      chartSubtitle: "Heures d’étude planifiées par jour.",
       chartBaseline: 'Actuel',
       chartSimulated: 'Simulé',
       chartEmpty: 'Aucune différence de temps d’étude planifié entre les deux plans.',
@@ -515,8 +560,7 @@ const fr: Translation = {
       apply: 'Appliquer le scénario',
       reset: 'Réinitialiser la simulation',
       applyTitle: 'Appliquer ce scénario ?',
-      applyDescription:
-        'Ces changements seront écrits dans vos données locales. Vous pourrez encore les modifier.',
+      applyDescription: "Confirmez pour enregistrer ces changements localement. Réinitialiser abandonne uniquement un aperçu non appliqué ; il n’y a pas d’annulation automatique après application.",
       applyConfirm: 'Appliquer les changements',
       cancel: 'Continuer la simulation',
       applied: 'Scénario appliqué',
@@ -525,6 +569,8 @@ const fr: Translation = {
         'Une réduction du temps d’écran reste hypothétique. Seule la capacité allouée est enregistrée.',
     },
     explanations: {
+      fixedUp: "Les engagements fixes occupent {{minutes}} minutes de plus cette semaine.",
+      fixedDown: "Les engagements fixes occupent {{minutes}} minutes de moins cette semaine.",
       noScenario: 'Ajoutez un changement pour voir son effet sur votre semaine.',
       plannedUp: 'Le plan simulé prévoit {{minutes}} minutes d’étude de plus.',
       plannedDown: 'Le plan simulé prévoit {{minutes}} minutes d’étude de moins.',
@@ -541,10 +587,11 @@ const fr: Translation = {
       recovered: 'Jusqu’à {{minutes}} minutes discrétionnaires sont récupérées par semaine.',
       infeasible:
         'Ce changement rend la semaine irréalisable : certains devoirs ne tiennent plus.',
-      noChange: 'Ce changement ne modifie aucune mesure calculée.',
+      noChange: "L’étude planifiée, les devoirs non planifiés, la capacité disponible et le nombre de conflits restent inchangés.",
     },
   },
   habits: {
+    logScrollHint: "Faites défiler ce journal pour voir toutes les saisies.",
     title: 'Habitudes numériques',
     subtitle: 'Comprenez où passe votre temps d’écran.',
     disclaimer:
@@ -748,7 +795,7 @@ const fr: Translation = {
       maxDaily: 'Étude quotidienne maximale (minutes)',
       maxDailyHint: 'Tous devoirs confondus sur une journée.',
       minBreak: 'Pause minimale (minutes)',
-      minBreakHint: 'Insérée après 90 minutes d’étude continue.',
+      minBreakHint: "Entre les blocs d’étude, y compris lors d’un changement de devoir.",
       sleepStart: 'Sommeil ou indisponibilité à partir de',
       sleepEnd: 'Jusqu’à',
       sleepHint: 'Aucun bloc d’étude n’est placé dans cette fenêtre.',
@@ -779,14 +826,14 @@ const fr: Translation = {
       title: 'Gestion des données',
       subtitle: 'Tout reste dans ce navigateur. Rien n’est envoyé.',
       export: 'Exporter les données (JSON)',
-      exportHint: 'Inclut tâches, engagements, temps d’écran et préférences.',
+      exportHint: "Inclut cours, devoirs, engagements, temps d’écran, objectifs et préférences.",
       import: 'Importer des données (JSON)',
       importHint: 'Les enregistrements invalides sont ignorés et signalés.',
       demo: 'Charger les données de démonstration',
       demoHint: 'Remplace les données actuelles par le jeu d’Alex Morgan.',
       clear: 'Effacer toutes les données',
-      clearHint: 'Supprime tout ce que SENTINEL a stocké dans ce navigateur.',
-      cleared: 'Toutes les données locales ont été supprimées',
+      clearHint: "Supprime les données de l’espace et réinitialise les préférences d’étude. Apparence, langue et sauvegardes de récupération sont conservées.",
+      cleared: "Données de l’espace effacées",
       imported: 'Données importées',
       importedWithErrors: 'Importé avec {{count}} enregistrements ignorés',
       exported: 'Export téléchargé',
@@ -795,8 +842,7 @@ const fr: Translation = {
       demoBody:
         'Les tâches, engagements, temps d’écran et préférences actuels seront remplacés par la démonstration d’Alex Morgan. Exportez d’abord si vous voulez conserver vos données.',
       clearTitle: 'Effacer toutes les données ?',
-      clearBody:
-        'Cela supprime chaque tâche, engagement, entrée de temps d’écran et préférence stockés dans ce navigateur. Action irréversible.',
+      clearBody: "Supprimer les cours, devoirs, engagements, utilisations et objectifs, puis réinitialiser les préférences d’étude ? Apparence, langue et sauvegardes sont conservées. Exportez d’abord ; pas d’annulation automatique.",
       importTitle: 'Importer ce fichier ?',
       importBody:
         'Les données importées remplacent ce qui est actuellement stocké dans ce navigateur.',

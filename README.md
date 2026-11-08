@@ -2,7 +2,11 @@
 
 **Plan for life, not just deadlines.**
 
-A digital wellness decision engine for university students. SENTINEL turns coursework, classes, work
+A digital wellness decision engine for university students.
+
+Current product polish/demo gate: [`docs/PRODUCT_POLISH.md`](docs/PRODUCT_POLISH.md).
+
+Preceding release-hardening evidence: [`docs/HARDENING_ACCEPTANCE.md`](docs/HARDENING_ACCEPTANCE.md). SENTINEL turns coursework, classes, work
 shifts, appointments, rest and screen-time habits into a realistic weekly plan — then lets you simulate
 decisions before you commit to them.
 
@@ -42,7 +46,7 @@ and **no data leaves the device**.
 ## First run and demo data
 
 A new workspace starts **empty** — no courses, no Example 101, no fake charts. Empty states explain
-what to do and provide the action. The setup dialog can be skipped and reopened by clearing data.
+what to do and provide the action. The setup dialog can be skipped. Use a fresh browser profile to replay onboarding; clearing workspace data retains onboarding completion.
 
 The demonstration set (fictional student **Alex Morgan**: four courses, nine assignments, classes,
 campus shifts, gym, rest, a week of screen time) is installed only from
@@ -54,10 +58,13 @@ the replacement. **Reset demo data** regenerates it with dates relative to today
 ## Getting started
 
 ```bash
+# Node 22.12+ (acceptance verified on Node 24)
 npm ci
 npm run dev        # http://localhost:3000
 npm run typecheck  # tsc --noEmit (strict)
 npm run test       # vitest run
+npx playwright install chromium # one-time browser setup (Node 22.12+)
+npm run test:e2e   # real Chromium student workflows and 30 layout combinations
 npm run build      # typecheck + production bundle in dist/
 npm run preview    # serve the production build
 ```
@@ -86,12 +93,12 @@ it through `useWeekSchedule`, so the planner, overview, insights and simulation 
    ordered by deadline, then priority (high → medium → low), then length. Work due the following Monday
    is therefore prepared this week instead of appearing in a list with no blocks.
 5. **Placement.** Chronological slot filling. Never after the deadline, never past the daily cap, at most
-   90 continuous minutes, then a break of at least the configured minimum.
+   90 continuous minutes, with a break of at least the configured minimum between blocks, including assignment changes.
 6. **Remaining work.** `estimatedMinutes − completedMinutes` is scheduled and counted as demand.
-7. **Reporting.** Anything that does not fit is listed as unscheduled with its remaining minutes and a
+7. **Reporting.** Later work is shown separately in the planner and excluded from this week’s totals. A final remainder below 30 minutes can use a short block. Anything in scope that does not fit is listed as unscheduled with its remaining minutes and a
    reason (`overdue` or `insufficient-time`). Nothing is silently dropped.
 
-**Granularity:** 30-minute slots. A 90-minute assignment receives 90 scheduled minutes when the week
+**Granularity:** 30-minute slots, with a shorter final block for remaining work such as 15 minutes. A 90-minute assignment receives 90 scheduled minutes when the week
 has room; if only 60 minutes fit, the remaining 30 are reported as unscheduled rather than hidden.
 
 Overlapping commitments are reported as conflicts. Generated study blocks cannot overlap by construction.
@@ -167,6 +174,7 @@ connect to Google Calendar, Outlook, Canvas or a university portal.
 ## Digital habits
 
 - Entries are manual and labelled as such; SENTINEL never reads device usage.
+- Per-app daily goals can be created, edited and deleted; progress uses today’s manual entries and explicitly marks missing data as unknown. Goals persist and travel in JSON backups.
 - Daily average uses recorded days, not a fixed seven; the trend covers the rolling week.
 - "Discretionary" is `social`, `entertainment` and `other`; education and productivity are preserved.
 - Recovered time is hypothetical and is never automatically converted into study time.
@@ -213,47 +221,15 @@ review of tone and domain terms is recommended before public release.
 
 ## Tests
 
-`npm test` runs 75 tests in 11 files:
+The current suite includes 146 unit/integration tests in 14 files, deterministic generated workloads,
+recovery/quota/import validation, goals, simulation isolation and locale checks. Playwright runs real
+student workflows against Chromium, with console/runtime errors treated as failures, responsive checks
+and axe WCAG scans. Exact commands, final counts and evidence boundaries are maintained in
+[`docs/HARDENING_ACCEPTANCE.md`](docs/HARDENING_ACCEPTANCE.md).
 
-- Scheduling: ordering, priority tie-breaks, look-ahead window, non-overlap, deadline safety,
-  infeasible workloads and reported remainders, completed-minute subtraction.
-- Recurrence: multiple weekdays, exceptions, end dates, one-off pass-through, and a recurring class
-  blocking study time in the engine.
-- Priority listbox and deadline calendar: pointer and keyboard selection, month navigation, local keys.
-- Task creation through the real dialog: priority and deadline saved, 90 minutes scheduled before the
-  deadline, persistence, recalculation, Simulation Lab sync.
-- Course management through the real UI: create, edit, archive, and delete-with-keep semantics.
-- Data: schema migration, merge/replace helpers, duplicate handling, JSON validation, storage round-trip.
-- CSV: quoting/parsing, course/task/commitment import validation, templates.
-- Simulation: input immutability, screen-time capping, scenario commit.
-- Assignment lifecycle: completing removes generated blocks, reopening restores them, and partial
-  progress schedules only the remaining minutes.
-- Habit totals and reduction limits; pressure bounds; translation key parity.
-
-Verification used for this revision:
-
-```
-npm run typecheck  → exit 0
-npm test           → 75 passed (11 files), exit 0
-npm run build      → exit 0
-  index   525.63 kB (152.36 kB gzip)
-  charts  385.04 kB (106.21 kB gzip)
-  react   156.08 kB (51.10 kB gzip)
-  intl     83.50 kB (25.81 kB gzip)
-  css      31.86 kB (6.74 kB gzip)
-```
-
-A headless end-to-end suite is not committed: Playwright could not run in this build environment.
-
-**Manual browser pass (release audit):** with storage cleared, the real app confirmed an empty
-workspace, skipping onboarding, and creating a High-priority 90-minute assignment through the calendar.
-The planner scheduled it on Sunday 09:00–10:30; adding a Monday 09:00–17:00 class left that window free
-of study blocks, so no overlap was produced. Completing it removed the blocks, a reload preserved that
-state, and reopening restored them. A
-dark theme and Simplified Chinese were applied and persisted with no horizontal overflow. Layout was
-measured on the real routes at 320, 375, 768, 1024 and 1440 px — all 30 route/width combinations had
-`scrollWidth === clientWidth` — using a temporary same-origin harness that is not part of the repository.
-Full results, evidence gaps and remaining issues are in [`docs/RELEASE_AUDIT.md`](docs/RELEASE_AUDIT.md).
+Run browser tests against `npm run preview` using `PLAYWRIGHT_BASE_URL` to verify the production bundle.
+The production app serves its Inter fonts locally and uses route-level lazy loading. No Google Fonts
+request is required.
 
 ---
 
@@ -277,6 +253,8 @@ A judged script is in [`docs/HACKATHON_DEMO.md`](docs/HACKATHON_DEMO.md).
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — layers, data model, algorithm, persistence.
 - [`docs/DEVELOPMENT_LIFECYCLE.md`](docs/DEVELOPMENT_LIFECYCLE.md) — planning, changes, testing and AI assistance.
 - [`docs/HACKATHON_DEMO.md`](docs/HACKATHON_DEMO.md) — three-minute presentation.
+- [`docs/HARDENING_ACCEPTANCE.md`](docs/HARDENING_ACCEPTANCE.md) — current acceptance matrix, fixes and release classification.
+- [`docs/INDEPENDENT_AUDIT.md`](docs/INDEPENDENT_AUDIT.md) — independent regression fixes and browser verification.
 - [`docs/RELEASE_AUDIT.md`](docs/RELEASE_AUDIT.md) — what was verified, how, and what remains.
 - [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md) — unsupported and unverified behaviour.
 - [`docs/CODEX_HANDOFF.md`](docs/CODEX_HANDOFF.md) — architecture, commands and prioritized next tasks.
@@ -324,5 +302,8 @@ src/
 - Workload Pressure is a transparent heuristic, not a validated instrument.
 - Screen-time entries are self-reported; there is no device integration by design.
 - The four non-English locales have not had native-speaker review.
-- A corrupt local payload is backed up to `sentinel.v2.data.corrupt` but there is no UI to restore it.
+- Settings provides raw corrupt-data backup downloads, validation and a confirmed merge recovery flow.
 - The full list is in [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md).
+
+Latest release-candidate evidence: [Final release verification](docs/FINAL_RELEASE_VERIFICATION.md)
+(150 unit/integration tests, 27 production Chromium tests; exact tested commit and limitations recorded).

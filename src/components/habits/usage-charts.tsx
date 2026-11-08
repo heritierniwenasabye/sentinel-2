@@ -33,7 +33,7 @@ export function UsageTrendChart({ summary }: { summary: HabitsSummary }) {
         <>
           <div className="h-[220px] w-full" role="img" aria-label={t('a11y.habitsTrendChart')}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={rows} margin={{ top: 4, right: 4, left: -18, bottom: 0 }} barSize={20}>
+              <BarChart data={rows} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barSize={20}>
                 <XAxis
                   dataKey="day"
                   tickLine={false}
@@ -45,7 +45,7 @@ export function UsageTrendChart({ summary }: { summary: HabitsSummary }) {
                   tickLine={false}
                   axisLine={false}
                   tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
-                  width={40}
+                  width={48}
                 />
                 <Tooltip
                   cursor={{ fill: 'hsl(var(--muted))', opacity: 0.5 }}
@@ -65,7 +65,8 @@ export function UsageTrendChart({ summary }: { summary: HabitsSummary }) {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <table className="sr-only">
+          <div className="sr-only">
+          <table>
             <caption>{t('a11y.habitsTrendChart')}</caption>
             <tbody>
               {summary.last7Days.map((day) => (
@@ -76,6 +77,7 @@ export function UsageTrendChart({ summary }: { summary: HabitsSummary }) {
               ))}
             </tbody>
           </table>
+          </div>
         </>
       ) : (
         <EmptyState

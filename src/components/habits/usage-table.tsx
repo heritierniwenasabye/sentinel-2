@@ -72,9 +72,10 @@ export function UsageTable({ entries, onEdit, onDelete }: UsageTableProps) {
           compact
         />
       ) : (
-        <div className="scroll-area -mx-1 overflow-x-auto px-1">
+        <div role="region" aria-label={t('habits.logTitle')} aria-describedby="usage-log-scroll-hint" tabIndex={0} className="scroll-area -mx-1 max-h-[28rem] overflow-auto rounded-sm px-1">
+          <p id="usage-log-scroll-hint" className="pb-2 text-2xs text-muted-foreground">{t('habits.logScrollHint')}</p>
           <table className="w-full min-w-[460px] border-collapse text-left text-xs">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-card">
               <tr className="border-b border-border text-2xs uppercase tracking-wide text-muted-foreground">
                 <th scope="col" className="py-1.5 pr-2 font-medium">
                   {t('habits.table.app')}

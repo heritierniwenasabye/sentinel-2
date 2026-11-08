@@ -98,6 +98,13 @@ export function compareScenario(data: AppData, options: CompareOptions): Simulat
       deltas.remainingCapacityMinutes,
       'minutes',
     );
+    if (planned) planned.tone = 'info';
+    if (capacity) capacity.tone = deltas.remainingCapacityMinutes > 0 ? 'positive' : 'warning';
+    const fixedDelta = simulated.totals.fixedMinutes - baseline.totals.fixedMinutes;
+    if (fixedDelta !== 0) explanations.push({
+      id: 'fixed-time', key: fixedDelta > 0 ? 'simulation.explanations.fixedUp' : 'simulation.explanations.fixedDown',
+      params: { minutes: Math.abs(fixedDelta) }, tone: 'info',
+    });
     for (const explanation of [unscheduled, planned, capacity, conflicts]) {
       if (explanation) explanations.push(explanation);
     }
@@ -127,7 +134,7 @@ export function compareScenario(data: AppData, options: CompareOptions): Simulat
         tone: 'critical',
       });
     }
-    if (explanations.length === 0) {
+    if (!planned && !unscheduled && !capacity && !conflicts && deltas.demandMinutes === 0) {
       explanations.push({
         id: 'no-change',
         key: 'simulation.explanations.noChange',

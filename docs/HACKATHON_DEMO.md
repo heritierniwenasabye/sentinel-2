@@ -1,88 +1,89 @@
 # SENTINEL 2.0 — Three-minute demonstration
 
-**Plan for life, not just deadlines.**
+**Plan for life, not just deadlines.** This script uses optional fictional data and real calculations.
+Use a separate browser profile. No account or paid service is needed. A running local/static host is
+required; once loaded, the calculations and data edits stay in the browser. Do not claim an offline
+installation or background phone monitoring.
 
-Everything below runs offline in one browser tab. No account, no payment, no network calls.
+## Rehearse before judging
 
-## Before you start (do this once, off-camera)
+1. With Node 22.12+, run `npm ci`, `npm run build`, then `npm run preview`. Open the production preview.
+2. Export any data worth keeping. In the separate demo profile, skip setup, open **Settings → Load
+   demo data → confirm**. This installs fictional Alex Morgan: four courses, nine assignments and
+   date-relative commitments/usage. Use **Reset demo data** before each rehearsal; keep the chosen
+   theme/language, and start on Overview. Clearing a workspace does not reopen onboarding.
+3. On Smart Planner, find **a future blue study block this week**. Write down its actual day/start/end
+   and assignment. During the demo, use that exact interval for an “Extra campus shift.” Do not use a
+   fixed Tuesday date: it may already be past. Comparison is explicitly for the current week.
+4. Rehearse the shift once, read the actual changes, then **Reset simulation**. Work may move to another
+   free slot, remain partly unscheduled, or leave study totals unchanged. Never promise a particular
+   pressure score or number of lost study hours. The fixed-commitment row always reports the booked
+   time inside the displayed week; explanations say when the study/capacity/conflict totals are unchanged.
+5. If this week has no future study block (for example Sunday after study hours), demonstrate an honest
+   no-change result and the planning horizon. Do not manipulate the dataset to manufacture an effect.
+   Rehearse during study hours if a visible reallocation is central to the presentation.
 
-1. `npm ci && npm run dev` (or open the deployed static build).
-2. Open **Settings → Data management**. If the workspace is not empty, export a backup and clear it,
-   so the first-run experience is genuine.
-3. Keep the browser at a normal laptop width; the layout also works down to 320 px.
+The seven weekday 10:00 rehearsals in `product-polish.test.tsx` load the real demo generator, select
+an actual future block, add a shift and check computed commitment time and non-overlap. Browser tests
+also rehearse Monday and Saturday. These are regression fixtures, not fabricated product analytics.
 
-## 0:00 — The problem (20 s)
+## 0:00–0:25 — Problem and current plan
 
-Students do not fail because they cannot list deadlines. They fail because the week is already full.
-SENTINEL turns coursework, classes, shifts, rest and screen time into one realistic plan, then lets
-you test a decision **before** you accept it.
+“Deadlines are only half the problem. Classes, work, rest and available study time have to fit too.”
 
-## 0:20 — First use (30 s)
+On **Overview**, point to planned study, available capacity and upcoming deadlines. Explain that the
+label **Unscheduled** means work still needing a slot, not work already completed. The dataset is
+explicitly fictional; a new student's workspace starts empty.
 
-The setup dialog appears only for a new workspace. Enter an optional name, set study hours and a
-daily limit, keep the language and theme, and add one course and one assignment. It is skippable, and
-the app states plainly that data stays in this browser.
+## 0:25–1:00 — Show a realistic schedule
 
-> Point out: no fictional student is injected automatically. An empty workspace stays empty, with
-> instructions rather than fake charts.
+Open **Smart Planner**. Point to one fixed class/shift and the future blue study block identified
+beforehand. Click that block to open its real assignment, show deadline, priority and remaining study
+minutes, then **Cancel**. Point to any unscheduled work and its reason. The planner protects sleep,
+breaks and daily limits; it reports overload rather than silently dropping it.
 
-## 0:50 — Load the judging scenario (20 s)
+Avoid creating and editing several courses live inside this 35-second section. Course management,
+first-use setup and imports are available for questions after the main presentation.
 
-**Settings → Load demo data → confirm.** This replaces the workspace with *Alex Morgan*, a fictional
-student with four courses, nine assignments, a part-time café job and a week of screen time. All dates
-are generated relative to today.
+## 1:00–2:00 — Rehearse a decision before saving
 
-## 1:10 — Intellectual wellness (35 s)
+Open **Simulation Lab** and read the displayed week. The two cards start as the same plan.
 
-Open **Smart Planner**.
+1. Under **Add a work shift**, enter “Extra campus shift” using the actual future block's date and times.
+2. Click **Add to comparison**. Point to the named pending change and the “saved data is unchanged” notice.
+3. Compare **Fixed commitments**, planned study, unscheduled coursework, available capacity and conflicts.
+   Read the computed **What this means** explanation. The chart uses hours; tooltips show durations.
+   A shift can move study elsewhere without reducing total study. Say so when that is the result.
+4. Click **Reset simulation**: the hypothetical change disappears and the saved plan is unchanged.
+5. Briefly show **Apply scenario** on a repeated preview: it lists changes and asks for confirmation.
+   Choose **Keep simulating**, then reset. Applying would save the listed changes locally; Reset does
+   not undo an already applied scenario. Demonstrate actual apply/reload only if time permits.
 
-- The weekly calendar shows classes, shifts and **generated study blocks**, each labelled with the
-  assignment it belongs to. Click a study block to open that assignment.
-- Below, *Could not be scheduled* reports anything that does not fit, in minutes, with the reason.
-- Switch to the **Courses** tab: add a course, edit it, archive it, then try deleting one and note
-  that SENTINEL asks whether to keep or delete its assignments — nothing is silently destroyed.
-- Create a task with priority **High**, a deadline via the calendar and 90 minutes. Save: the plan
-  recalculates immediately. Refresh the page: it is still there.
+## 2:00–2:30 — Wellness and manual habits
 
-## 1:45 — Emotional and financial wellness (45 s)
+On **Wellness Insights**, point to the transparent pressure formula and intellectual, emotional,
+financial and physical dimensions. This is a planning heuristic, not a clinical assessment.
 
-Open **Wellness Insights**. The Workload Pressure score shows its full formula, and the four
-Maryville dimensions each link to the feature that acts on them.
+On **Digital Habits**, show manual totals and daily goals. “No entry today” means unknown usage.
+The log scrolls within its panel so goals and the reduction simulator stay reachable. Reducing
+self-reported discretionary usage is hypothetical; it becomes extra planning capacity only after an
+explicit allocation action, not automatically.
 
-Open **Simulation Lab**:
+## 2:30–3:00 — Persistence, lifecycle and close
 
-1. *Add a work shift* — Tuesday 17:00–21:00, add it to the comparison.
-2. The panel shows **Current plan vs Simulated plan**: scheduled study, unscheduled coursework,
-   conflicts and pressure. The explanation lines are computed, not written in advance.
-3. Nothing has been saved yet. **Reset** discards the preview; **Apply scenario** asks for
-   confirmation and only then writes to storage.
-4. Repeat with *Change a task deadline* or *Reduce screen time* to show the trade-off between paid
-   work and academic time — and that an ineffective change is reported as having no measurable effect.
+Open **Settings**, show JSON backup and the confirmed import preview (cancel it if opened).
+Describe the lifecycle: deterministic planning → reproduced defects → regression tests → browser
+and accessibility checks. Refer to the repository's acceptance/polish reports for exact results.
 
-## 2:30 — Physical wellness and habits (15 s)
+Close: “SENTINEL shows what a student's week can hold, and lets them test a decision before committing.”
 
-**Digital Habits**: entries are manual; totals, the seven-day trend and category breakdown all use the
-stored rows. The simulator caps any proposed reduction at the discretionary minutes actually recorded
-and never claims they become study time automatically.
+## Questions and recovery
 
-## 2:45 — Lifecycle and close (15 s)
-
-- **Settings → Import/export**: JSON export, then a JSON import preview offering **merge or replace**
-  with counts and skipped duplicates; CSV export plus downloadable templates for courses, assignments
-  and commitments.
-- Data is local-only; the README and `docs/` explain the architecture, the algorithm, the development
-  history and the known limitations (no iCal yet, weekly recurrence only, translations not yet
-  reviewed by native speakers).
-- Close on the statement: *SENTINEL does not tell students to work harder. It shows them what their
-  week can actually hold.*
-
-## If something goes wrong
-
-- **No data after reload?** The browser blocked localStorage; SENTINEL shows a banner instead of
-  pretending to save.
-- **Demo dates look stale?** Use *Reset demo data* — it regenerates relative dates.
-- **A judge asks for a number:** every metric opens its own explanation; the pressure formula is
-  published in the UI and in the README.
-- **Judging rubric mapping:** Functionality → the live create/edit/delete/persist flow; Wellness → the
-  four dimensions page; Creativity → the simulation of decisions before commitment; Lifecycle → README
-  plus `docs/DEVELOPMENT_LIFECYCLE.md`.
+- **Fresh start?** Use a new profile to show onboarding. Workspace clearing retains appearance,
+  language, onboarding completion and raw recovery backups; its confirmation explains the scope.
+- **Storage warning?** Export the current in-memory workspace before reloading. A failed write cannot
+  survive a refresh. Settings offers raw-backup recovery when damaged data was preserved.
+- **Numbers differ from rehearsal?** Dates and free time are relative to the real clock. Read the
+  displayed results; no result in the spoken script is hardcoded.
+- **No hosted preview?** Local production testing is complete; hosted deployment verification still
+  needs a real URL and owner approval. This work did not deploy or merge anything.

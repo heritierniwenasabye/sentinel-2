@@ -138,6 +138,7 @@ export function DatePicker({ id, value, onChange, invalid, describedBy, classNam
         break;
       case 'Escape':
         event.preventDefault();
+        event.stopPropagation();
         close();
         break;
       default:
@@ -198,7 +199,7 @@ export function DatePicker({ id, value, onChange, invalid, describedBy, classNam
               data-testid="calendar-prev"
               onClick={() => shiftMonth(-1)}
               aria-label={t('common.previousMonth')}
-              className="rounded-sm p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+              className="flex size-8 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
             >
               <ChevronLeft aria-hidden="true" className="size-4" />
             </button>
@@ -210,7 +211,7 @@ export function DatePicker({ id, value, onChange, invalid, describedBy, classNam
               data-testid="calendar-next"
               onClick={() => shiftMonth(1)}
               aria-label={t('common.nextMonth')}
-              className="rounded-sm p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+              className="flex size-8 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
             >
               <ChevronRight aria-hidden="true" className="size-4" />
             </button>
@@ -243,7 +244,7 @@ export function DatePicker({ id, value, onChange, invalid, describedBy, classNam
                   aria-label={format.date(`${key}T12:00:00`, 'EEEE d MMMM yyyy')}
                   className={cn(
                     'h-8 rounded-sm text-xs tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
-                    outside ? 'text-muted-foreground/50' : 'text-foreground',
+                    outside ? 'text-muted-foreground' : 'text-foreground',
                     isSelected ? 'bg-primary text-background' : 'hover:bg-muted',
                     !isSelected && key === todayKey && 'border border-primary/40',
                   )}

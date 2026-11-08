@@ -1,3 +1,4 @@
+import { radioKeyboard } from '@/lib/radio-keyboard';
 import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
@@ -142,6 +143,7 @@ export function CourseDialog({ open, onOpenChange, course }: CourseDialogProps) 
               </Label>
               <Input
                 id="course-name"
+              maxLength={120}
                 value={form.name}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, name: event.target.value }))
@@ -158,6 +160,7 @@ export function CourseDialog({ open, onOpenChange, course }: CourseDialogProps) 
               <Label htmlFor="course-code">{t('courses.code')}</Label>
               <Input
                 id="course-code"
+              maxLength={40}
                 value={form.code}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, code: event.target.value }))
@@ -169,7 +172,7 @@ export function CourseDialog({ open, onOpenChange, course }: CourseDialogProps) 
 
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-foreground">{t('courses.color')}</span>
-            <div role="radiogroup" aria-label={t('courses.color')} className="flex flex-wrap gap-2">
+            <div role="radiogroup" onKeyDown={radioKeyboard} aria-label={t('courses.color')} className="flex flex-wrap gap-2">
               {COURSE_COLORS.map((color) => {
                 const active = form.color === color;
                 return (
@@ -200,6 +203,7 @@ export function CourseDialog({ open, onOpenChange, course }: CourseDialogProps) 
             <Label htmlFor="course-instructor">{t('courses.instructor')}</Label>
             <Input
               id="course-instructor"
+              maxLength={120}
               value={form.instructor}
               onChange={(event) =>
                 setForm((current) => ({ ...current, instructor: event.target.value }))

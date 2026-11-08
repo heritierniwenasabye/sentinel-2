@@ -11,7 +11,7 @@
     --card-foreground: 220 10% 10%;
     --foreground: 220 10% 10%; /* #17191C */
     --muted: 220 14% 96%;
-    --muted-foreground: 210 7% 44%; /* #687078 */
+    --muted-foreground: 210 7% 40%; /* #687078 */
     --subtle: 218 12% 95%;
     --border: 216 13% 92%; /* #E7E9EC */
     --input: 216 13% 89%;
@@ -30,7 +30,7 @@
     --destructive: 0 58% 44%;
     --destructive-foreground: 0 0% 100%;
     --success: 154 42% 31%;
-    --warning: 32 72% 38%;
+    --warning: 32 72% 33%;
     --critical: 0 58% 44%;
 
     /* Charts */
@@ -64,7 +64,7 @@
     --destructive-foreground: 220 16% 7%;
     --success: 150 40% 62%;
     --warning: 36 68% 62%;
-    --critical: 0 62% 64%;
+    --critical: 0 62% 70%;
 
     --chart-1: 215 10% 45%;
     --chart-2: 225 51% 77%;

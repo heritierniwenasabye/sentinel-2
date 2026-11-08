@@ -137,8 +137,8 @@ export function HabitSimulator({ summary }: { summary: HabitsSummary }) {
                   })}
                 </li>
               ) : null}
-              <li>{t('habits.suggestionAverage', { minutes: summary.dailyAverageMinutes })}</li>
-              {result.capped ? <li className="text-warning">{t('habits.simulator.capped')}</li> : null}
+              <li>{summary.recordedDays > 0 ? t('habits.suggestionAverage', { minutes: summary.dailyAverageMinutes }) : t('habits.simulator.notEnough')}</li>
+              {hasDiscretionary && result.capped ? <li className="text-warning">{t('habits.simulator.capped')}</li> : null}
             </ul>
           </div>
           <p className="text-2xs leading-relaxed text-muted-foreground">

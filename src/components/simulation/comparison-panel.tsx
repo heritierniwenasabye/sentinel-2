@@ -25,8 +25,8 @@ function MetricRow({ label, value, emphasized }: MetricRowProps) {
         emphasized && 'font-medium',
       )}
     >
-      <span className="text-muted-foreground">{label}</span>
-      <span className="tabular-nums text-foreground">{value}</span>
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="tabular-nums text-foreground">{value}</dd>
     </div>
   );
 }
@@ -71,6 +71,7 @@ export function ComparisonPanel({
           </p>
           <p className="text-2xs text-muted-foreground">{t('simulation.compare.planned')}</p>
           <dl className="mt-3 flex flex-col divide-y divide-border/70">
+            <MetricRow label={t('simulation.compare.fixed')} value={format.duration(baseline.totals.fixedMinutes)} />
             <MetricRow
               label={t('simulation.compare.unscheduled')}
               value={format.duration(baseline.totals.unscheduledMinutes)}
@@ -98,6 +99,7 @@ export function ComparisonPanel({
           </p>
           <p className="text-2xs text-muted-foreground">{t('simulation.compare.planned')}</p>
           <dl className="mt-3 flex flex-col divide-y divide-border/70">
+            <MetricRow label={t('simulation.compare.fixed')} value={format.duration(simulated.totals.fixedMinutes)} />
             <MetricRow
               label={t('simulation.compare.unscheduled')}
               value={format.duration(simulated.totals.unscheduledMinutes)}
@@ -117,7 +119,7 @@ export function ComparisonPanel({
             />
           </dl>
           <p className="mt-3 text-2xs leading-relaxed text-muted-foreground">
-            {hasChanges ? t('simulation.compare.chartSubtitle') : t('simulation.compare.chartEmpty')}
+            {hasChanges ? t('simulation.compare.chartSubtitle') : t('simulation.explanations.noScenario')}
           </p>
         </div>
       </div>

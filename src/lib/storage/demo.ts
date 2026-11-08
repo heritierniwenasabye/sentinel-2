@@ -276,6 +276,7 @@ export function createDemoData(now: Date = new Date()): AppData {
     tasks,
     commitments,
     usage,
+    usageGoals: [],
     preferences: {
       ...DEFAULT_PREFERENCES,
       displayName: 'Alex Morgan',

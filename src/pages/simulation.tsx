@@ -1,3 +1,4 @@
+import { addDays } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Play, RotateCcw, TriangleAlert } from 'lucide-react';
@@ -10,6 +11,7 @@ import { PendingChanges } from '@/components/simulation/pending-changes';
 import { ComparisonPanel } from '@/components/simulation/comparison-panel';
 import { ComparisonChart } from '@/components/simulation/comparison-chart';
 import { Explanations } from '@/components/simulation/explanations';
+import { useClock } from '@/hooks/use-clock';
 import { useApp } from '@/hooks/use-app';
 import { useToast } from '@/components/ui/toast';
 import { compareScenario } from '@/lib/simulation/engine';
@@ -27,10 +29,12 @@ export function SimulationPage() {
   const [ops, setOps] = useState<ScenarioOp[]>([]);
   const [applyOpen, setApplyOpen] = useState(false);
 
-  const weekStart = useMemo(() => startOfWeekMonday(new Date()), []);
+  const now = useClock();
+  const weekKey = startOfWeekMonday(now).getTime();
+  const weekStart = useMemo(() => new Date(weekKey), [weekKey]);
   const comparison = useMemo(
-    () => compareScenario(data, { weekStart, ops }),
-    [data, weekStart, ops],
+    () => compareScenario(data, { weekStart, ops, now }),
+    [data, weekStart, ops, now],
   );
 
   const baselineAnalysis = useMemo(
@@ -56,7 +60,7 @@ export function SimulationPage() {
       <PageHeader
         title={t('simulation.title')}
         subtitle={t('simulation.subtitle')}
-        meta={<p className="max-w-2xl text-xs leading-relaxed text-muted-foreground">{t('simulation.intro')}</p>}
+        meta={<div className="flex max-w-2xl flex-col gap-1 text-xs leading-relaxed text-muted-foreground"><p>{t('simulation.intro')}</p><p>{t('simulation.weekScope', { start: format.date(weekStart, 'd MMM'), end: format.date(addDays(weekStart, 6), 'd MMM yyyy') })}</p></div>}
         actions={
           <>
             <Button

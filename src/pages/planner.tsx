@@ -1,3 +1,4 @@
+import { useClock } from '@/hooks/use-clock';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { addDays, parseISO, startOfDay } from 'date-fns';
@@ -28,6 +29,7 @@ import { CourseManager } from '@/components/planner/course-manager';
 import { useApp } from '@/hooks/use-app';
 import { useWeekSchedule } from '@/hooks/use-schedule';
 import { useToast } from '@/components/ui/toast';
+import { SCHEDULING_LOOKAHEAD_DAYS } from '@/lib/scheduling/engine';
 import { startOfWeekMonday, toDateKey } from '@/lib/date';
 import { expandCommitments, isRecurring } from '@/lib/recurrence';
 
@@ -59,16 +61,12 @@ export function PlannerPage() {
 
   // New work defaults to the Sunday of the week being viewed, so it can be
   // scheduled immediately instead of landing in a week the student cannot see.
+  const currentDayKey = toDateKey(useClock());
   const defaultDeadlineDate = useMemo(() => {
     const sunday = startOfDay(addDays(weekStart, 6));
-    const today = startOfDay(new Date());
+    const today = startOfDay(parseISO(currentDayKey));
     return toDateKey(sunday.getTime() < today.getTime() ? today : sunday);
-  }, [weekStart]);
-
-  const scheduledTaskIds = useMemo(
-    () => new Set(schedule.blocks.map((block) => block.taskId)),
-    [schedule.blocks],
-  );
+  }, [weekStart, currentDayKey]);
 
   const weekTasks = useMemo(
     () =>
@@ -77,9 +75,9 @@ export function PlannerPage() {
         if (task.completed) return deadline >= weekStart && deadline < weekEnd;
         if (deadline < weekEnd) return true;
         // Look-ahead work is planned in this week even though it is due later.
-        return scheduledTaskIds.has(task.id);
+        return deadline <= addDays(weekEnd, SCHEDULING_LOOKAHEAD_DAYS);
       }),
-    [tasks, weekStart, weekEnd, scheduledTaskIds],
+    [tasks, weekStart, weekEnd],
   );
 
   const weekCommitments = useMemo(
@@ -87,13 +85,15 @@ export function PlannerPage() {
     [commitments, weekStart, weekEnd],
   );
 
+  const laterTasks = tasks.filter(task => !task.completed &&
+    parseISO(task.deadline) > addDays(weekEnd, SCHEDULING_LOOKAHEAD_DAYS));
+
   const isCurrentWeek = startOfWeekMonday(new Date()).getTime() === weekStart.getTime();
   // Work inside the planning horizon includes anything the engine could not fit,
   // so the header never claims "2 of 2" while seven assignments are unscheduled.
-  const unscheduledTaskCount = new Set(schedule.unscheduled.map((item) => item.taskId)).size;
   const openCount = Math.max(
     weekTasks.filter((task) => !task.completed).length,
-    schedule.totals.scheduledTaskCount + unscheduledTaskCount,
+    new Set([...schedule.blocks.map(block => block.taskId), ...schedule.unscheduled.map(item => item.taskId)]).size,
   );
 
   const openNewTask = () => {
@@ -236,6 +236,14 @@ export function PlannerPage() {
                 }}
                 onDelete={(task) => setTaskToDelete(task)}
               />
+              {laterTasks.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs text-muted-foreground">{t('planner.laterWork')}</p>
+                  <TaskList tasks={laterTasks} schedule={schedule} onToggle={toggleTask}
+                    onEdit={(task) => { setEditingTask(task); setTaskDialogOpen(true); }}
+                    onDelete={setTaskToDelete} />
+                </div>
+              ) : null}
               <CommitmentList
                 commitments={weekCommitments}
                 onAdd={openNewCommitment}

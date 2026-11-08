@@ -1,3 +1,4 @@
+import { radioKeyboard } from '@/lib/radio-keyboard';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ArrowRight, Check, Moon, Monitor, ShieldCheck, Sun } from 'lucide-react';
@@ -20,7 +21,7 @@ import { useToast } from '@/components/ui/toast';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import { createId } from '@/lib/utils';
 import { addDays, startOfWeek } from 'date-fns';
-import { toDateKey, toLocalIso } from '@/lib/date';
+import { isValidTime, toDateKey, toLocalIso } from '@/lib/date';
 import { fromDateAndTime } from '@/lib/form';
 import { COURSE_COLORS, COURSE_COLOR_CLASS } from '@/lib/courses';
 import { cn } from '@/lib/utils';
@@ -148,7 +149,7 @@ export function OnboardingWizard() {
   const next = () => {
     setError(null);
     if (step === 1) {
-      if (studyEnd <= studyStart) {
+      if (!isValidTime(studyStart) || !isValidTime(studyEnd) || !isValidTime(sleepStart) || !isValidTime(sleepEnd) || studyEnd <= studyStart) {
         setError(t('settings.planning.errorWindow'));
         return;
       }
@@ -172,6 +173,7 @@ export function OnboardingWizard() {
         setError(t('planner.taskDialog.errorDuration'));
         return;
       }
+      if (!fromDateAndTime(deadline, '23:59')) { setError(t('planner.taskDialog.errorDeadline')); return; }
       complete(true);
       return;
     }
@@ -284,7 +286,7 @@ export function OnboardingWizard() {
             <p className="text-xs leading-relaxed text-muted-foreground">
               {t('onboarding.appearanceBody')}
             </p>
-            <div role="radiogroup" aria-label={t('onboarding.appearanceTitle')} className="grid gap-2 sm:grid-cols-3">
+            <div role="radiogroup" onKeyDown={radioKeyboard} aria-label={t('onboarding.appearanceTitle')} className="grid gap-2 sm:grid-cols-3">
               {THEME_OPTIONS.map((option) => {
                 const Icon = option.icon;
                 const active = theme === option.value;
@@ -358,7 +360,7 @@ export function OnboardingWizard() {
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="text-xs font-medium text-foreground">{t('courses.color')}</span>
-              <div role="radiogroup" aria-label={t('courses.color')} className="flex flex-wrap gap-2">
+              <div role="radiogroup" onKeyDown={radioKeyboard} aria-label={t('courses.color')} className="flex flex-wrap gap-2">
                 {COURSE_COLORS.map((value) => (
                   <button
                     key={value}

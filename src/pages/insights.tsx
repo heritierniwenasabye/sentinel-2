@@ -1,3 +1,4 @@
+import { useClock } from '@/hooks/use-clock';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { addDays } from 'date-fns';
@@ -22,7 +23,7 @@ export function InsightsPage() {
   const { t } = useTranslation();
   const format = useFormatters();
   const { usage, preferences, commitments, tasks } = useApp();
-  const today = new Date();
+  const today = useClock();
   const todayKey = toDateKey(today);
   const weekStart = useMemo(() => startOfWeekMonday(today), [todayKey]);
   const schedule = useWeekSchedule(weekStart);
@@ -66,7 +67,7 @@ export function InsightsPage() {
         meta={
           <Badge tone="outline">
             {t('insights.scopeTitle')} · {format.date(weekStart, 'd MMM')} –{' '}
-            {format.date(new Date(weekStart.getTime() + 6 * 86400000), 'd MMM')}
+            {format.date(addDays(weekStart, 6), 'd MMM')}
           </Badge>
         }
       />

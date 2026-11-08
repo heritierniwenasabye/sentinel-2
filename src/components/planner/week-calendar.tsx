@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle } from 'lucide-react';
-import { parseISO } from 'date-fns';
+import { addDays, parseISO } from 'date-fns';
 import type {
   CommitmentCategory,
   CommitmentOccurrence,
@@ -85,7 +85,7 @@ export function WeekCalendar({
   const format = useFormatters();
 
   const days = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(weekStart.getTime() + index * 86400000);
+    const date = addDays(weekStart, index);
     return { date, key: toDateKey(date) };
   });
   const todayKey = toDateKey(new Date());
@@ -226,7 +226,7 @@ export function WeekCalendar({
                   ) : null}
 
                   {events.length === 0 ? (
-                    <span className="absolute inset-x-0 top-2 text-center text-2xs text-muted-foreground/70">
+                    <span className="absolute inset-x-0 top-2 text-center text-2xs text-muted-foreground">
                       {t('planner.free')}
                     </span>
                   ) : null}
@@ -258,7 +258,7 @@ export function WeekCalendar({
                       <>
                         <p className="truncate font-medium">{event.title}</p>
                         {height >= 34 ? (
-                          <p className="truncate tabular-nums opacity-70">{event.timeLabel}</p>
+                          <p className="truncate tabular-nums text-muted-foreground">{event.timeLabel}</p>
                         ) : null}
                       </>
                     );

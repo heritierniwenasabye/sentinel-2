@@ -45,10 +45,10 @@ function numberOr(value: unknown, fallback: number, min: number, max: number): n
  */
 export function normalizePreferences(input: Partial<UserPreferences> | undefined | null): UserPreferences {
   const source = input ?? {};
-  const studyStart = isValidTime(source.studyStart) ? source.studyStart : DEFAULT_PREFERENCES.studyStart;
+  let studyStart = isValidTime(source.studyStart) ? source.studyStart : DEFAULT_PREFERENCES.studyStart;
   let studyEnd = isValidTime(source.studyEnd) ? source.studyEnd : DEFAULT_PREFERENCES.studyEnd;
   // A study window must be at least 30 minutes long and must not wrap midnight.
-  if (studyEnd <= studyStart) studyEnd = DEFAULT_PREFERENCES.studyEnd;
+  if (studyEnd <= studyStart) { studyStart = DEFAULT_PREFERENCES.studyStart; studyEnd = DEFAULT_PREFERENCES.studyEnd; }
 
   const sleepStart = isValidTime(source.sleepStart) ? source.sleepStart : DEFAULT_PREFERENCES.sleepStart;
   const sleepEnd = isValidTime(source.sleepEnd) ? source.sleepEnd : DEFAULT_PREFERENCES.sleepEnd;

@@ -17,6 +17,7 @@ import { Label, FieldError } from '@/components/ui/label';
 import { useApp } from '@/hooks/use-app';
 import { useToast } from '@/components/ui/toast';
 import { createId } from '@/lib/utils';
+import { isDateKey } from '@/lib/recurrence';
 import { toLocalIso } from '@/lib/date';
 
 interface UsageDialogProps {
@@ -93,7 +94,7 @@ export function UsageDialog({ open, onOpenChange, entry }: UsageDialogProps) {
     const nextErrors: Partial<Record<keyof FormState, string>> = {};
     const minutes = Number(form.minutes);
     if (!form.app.trim()) nextErrors.app = t('habits.entryDialog.errorApp');
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(form.date)) nextErrors.date = t('habits.entryDialog.errorDate');
+    if (!isDateKey(form.date) || form.date > format(new Date(), 'yyyy-MM-dd')) nextErrors.date = t('habits.entryDialog.errorDate');
     if (!Number.isFinite(minutes) || minutes < 1 || minutes > 1440) {
       nextErrors.minutes = t('habits.entryDialog.errorMinutes');
     }
@@ -137,6 +138,7 @@ export function UsageDialog({ open, onOpenChange, entry }: UsageDialogProps) {
             <Label htmlFor="usage-app">{t('habits.entryDialog.appLabel')}</Label>
             <Input
               id="usage-app"
+              maxLength={80}
               value={form.app}
               onChange={(event) => setForm((current) => ({ ...current, app: event.target.value }))}
               placeholder={t('habits.entryDialog.appPlaceholder')}

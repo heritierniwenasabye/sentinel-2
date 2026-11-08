@@ -1,3 +1,5 @@
+import { MAX_IMPORT_BYTES, MAX_IMPORT_RECORDS } from '@/lib/io/limits';
+import { createId } from '@/lib/utils';
 import type {
   Commitment,
   CommitmentCategory,
@@ -38,6 +40,7 @@ export function toCsv(headers: string[], rows: (string | number | boolean)[][]):
  * malformed file is reported instead of silently misread.
  */
 export function parseCsv(text: string): CsvTable {
+  if (new TextEncoder().encode(text).length > MAX_IMPORT_BYTES) throw new Error('File exceeds 5 MiB.');
   const source = text.replace(/^\uFEFF/, '');
   const rows: string[][] = [];
   let row: string[] = [];
@@ -74,6 +77,7 @@ export function parseCsv(text: string): CsvTable {
       if (char === '\r' && source[index + 1] === '\n') index += 1;
       row.push(field);
       rows.push(row);
+      if (rows.length > MAX_IMPORT_RECORDS + 1) throw new Error('File exceeds 10,000 records.');
       row = [];
       field = '';
       continue;
@@ -85,20 +89,24 @@ export function parseCsv(text: string): CsvTable {
   if (field !== '' || row.length > 0) {
     row.push(field);
     rows.push(row);
+    if (rows.length > MAX_IMPORT_RECORDS + 1) throw new Error('File exceeds 10,000 records.');
   }
 
   const nonEmpty = rows.filter((cells) => cells.some((cell) => cell.trim() !== ''));
   if (nonEmpty.length === 0) return { headers: [], rows: [] };
   const [headerRow, ...dataRows] = nonEmpty;
+  const headers = headerRow.map((header) => header.trim().toLowerCase());
+  if (new Set(headers).size !== headers.length || headers.some(h => !h || ['__proto__', 'constructor', 'prototype'].includes(h))) throw new Error('Invalid or duplicate columns.');
+  if (dataRows.some(row => row.length !== headers.length)) throw new Error('Row column count does not match header.');
   return {
-    headers: headerRow.map((header) => header.trim().toLowerCase()),
+    headers,
     rows: dataRows,
   };
 }
 
 /** Maps a row to a header-keyed record, missing cells becoming empty strings. */
 export function rowRecord(table: CsvTable, row: string[]): Record<string, string> {
-  const record: Record<string, string> = {};
+  const record: Record<string, string> = Object.create(null);
   table.headers.forEach((header, index) => {
     record[header] = (row[index] ?? '').trim();
   });
@@ -115,6 +123,7 @@ export function parseDateTimeCell(value: string, endOfDay = '23:59'): string | n
     const dateKey = match[1];
     const time = match[2] ?? endOfDay;
     if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(time)) return null;
+    if (!isDateKey(dateKey)) return null;
     return `${dateKey}T${time}:00`;
   }
   const parsed = parseLocal(value);
@@ -223,7 +232,7 @@ export function coursesFromCsv(
 
     seen.add(name.toLowerCase());
     items.push({
-      id: `course_csv_${now.getTime()}_${index + 1}`,
+      id: createId('course_csv'),
       name: name.slice(0, 120),
       code: (record.code ?? '').slice(0, 40),
       color,
@@ -354,12 +363,18 @@ export function tasksFromCsv(
       return;
     }
     const completedMinutes = Number(record.completedminutes ?? 0);
+    if (!Number.isFinite(completedMinutes) || completedMinutes < 0 || completedMinutes > estimated) {
+      errors.push(`Row ${line}: invalid completedMinutes`); return;
+    }
+    if (record.priority && !PRIORITIES.includes(record.priority as Priority)) {
+      errors.push(`Row ${line}: invalid priority`); return;
+    }
     const priority = PRIORITIES.includes(record.priority as Priority)
       ? (record.priority as Priority)
       : 'medium';
 
     items.push({
-      id: `task_csv_${now.getTime()}_${index + 1}`,
+      id: createId('task_csv'),
       title: title.slice(0, 200),
       course: course?.name ?? '',
       courseId: course?.id ?? '',
@@ -407,7 +422,7 @@ export const COMMITMENT_HEADERS = [
 
 export function commitmentsToCsv(commitments: Commitment[]): string {
   return toCsv(
-    ['title', 'category', 'start', 'end', 'notes', 'recurrence', 'weekdays', 'recurrenceUntil'],
+    ['title', 'category', 'start', 'end', 'notes', 'recurrence', 'weekdays', 'recurrenceUntil', 'exceptions', 'seriesId'],
     commitments.map((commitment) => [
       commitment.title,
       commitment.category,
@@ -417,6 +432,8 @@ export function commitmentsToCsv(commitments: Commitment[]): string {
       commitment.recurrence ?? 'none',
       (commitment.weekdays ?? []).join(' '),
       commitment.recurrenceUntil ?? '',
+      (commitment.exceptions ?? []).join(' '),
+      commitment.seriesId ?? '',
     ]),
   );
 }
@@ -427,7 +444,7 @@ export function commitmentsTemplateCsv(): string {
   start.setHours(9);
   const end = new Date(start.getTime() + 90 * 60_000);
   return toCsv(
-    ['title', 'category', 'start', 'end', 'notes', 'recurrence', 'weekdays', 'recurrenceUntil'],
+    ['title', 'category', 'start', 'end', 'notes', 'recurrence', 'weekdays', 'recurrenceUntil', 'exceptions', 'seriesId'],
     [
       [
         'Applied Mathematics — Lecture',
@@ -437,7 +454,7 @@ export function commitmentsTemplateCsv(): string {
         'Weekly lecture',
         'weekly',
         'Mon Wed',
-        '',
+        '', '', '',
       ],
     ],
   );
@@ -456,7 +473,7 @@ function parseWeekdayCell(value: string): number[] {
 
 export function commitmentsFromCsv(
   text: string,
-  now: Date = new Date(),
+  _now: Date = new Date(),
 ): CsvImportResult<Commitment> {
   const errors: string[] = [];
   let table: CsvTable;
@@ -500,14 +517,20 @@ export function commitmentsFromCsv(
           ? parseWeekdayCell(record.weekdays ?? '')
           : [weekdayOf(start)]
         : [];
+    if (recurrence === 'weekly' && record.weekdays && parseWeekdayCell(record.weekdays).length === 0) {
+      errors.push(`Row ${line}: invalid recurrence weekdays`); return;
+    }
+    if ((record.exceptions ?? '').split(/[,;\s]+/).filter(Boolean).some(day => !isDateKey(day))) {
+      errors.push(`Row ${line}: invalid exception date`); return;
+    }
     const until = record.recurrenceuntil ?? '';
-    if (until && !isDateKey(until)) {
+    if (until && (!isDateKey(until) || until < start.slice(0, 10))) {
       errors.push(`Row ${line}: recurrenceUntil must be yyyy-MM-dd`);
       return;
     }
 
     items.push({
-      id: `commitment_csv_${now.getTime()}_${index + 1}`,
+      id: createId('commitment_csv'),
       title: title.slice(0, 200),
       category,
       start,
@@ -516,7 +539,8 @@ export function commitmentsFromCsv(
       recurrence: weekdays.length > 0 ? 'weekly' : 'none',
       weekdays: recurrence === 'weekly' ? weekdays : [],
       recurrenceUntil: recurrence === 'weekly' ? until : '',
-      exceptions: [],
+      exceptions: (record.exceptions ?? '').split(/[,;\s]+/).filter(Boolean).filter(isDateKey),
+      seriesId: record.seriesid || undefined,
     });
   });
 

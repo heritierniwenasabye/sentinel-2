@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, parseISO } from 'date-fns';
+import { addDays, format, parseISO } from 'date-fns';
 import { Plus } from 'lucide-react';
 import type { Commitment, ScenarioOp, Task, UserPreferences } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { useFormatters } from '@/hooks/use-formatters';
 import { createId } from '@/lib/utils';
-import { toLocalIso } from '@/lib/date';
+import { expandCommitments } from '@/lib/recurrence';
+import { isValidTime, toLocalIso } from '@/lib/date';
 
 type ScenarioType =
   | 'addShift'
@@ -69,11 +70,11 @@ export function ScenarioBuilder({
   });
   const [screen, setScreen] = useState({ minutes: '180', allocate: false });
 
-  const weekEnd = new Date(weekStart.getTime() + 7 * 86400000);
+  const weekEnd = addDays(weekStart, 7);
   const weekCommitments = useMemo(
     () =>
       commitments
-        .filter((commitment) => parseISO(commitment.end) > weekStart && parseISO(commitment.start) < weekEnd)
+        .filter((commitment) => expandCommitments([commitment], weekStart, weekEnd).length > 0)
         .sort((a, b) => parseISO(a.start).getTime() - parseISO(b.start).getTime()),
     [commitments, weekStart, weekEnd],
   );
@@ -128,7 +129,7 @@ export function ScenarioBuilder({
     }
     if (taskDuration) {
       const minutes = Number(taskDuration);
-      if (!Number.isFinite(minutes) || minutes < 0) {
+      if (!Number.isFinite(minutes) || minutes < 30 || minutes > 2400) {
         return setError(t('planner.taskDialog.errorDuration'));
       }
       patch.estimatedMinutes = Math.round(minutes);
@@ -165,7 +166,7 @@ export function ScenarioBuilder({
 
   const submitWindow = (event: FormEvent) => {
     event.preventDefault();
-    if (window.end <= window.start) return setError(t('simulation.forms.errorWindow'));
+    if (!isValidTime(window.start) || !isValidTime(window.end) || window.end <= window.start) return setError(t('simulation.forms.errorWindow'));
     onAdd({ type: 'study-window', start: window.start, end: window.end });
     reset();
   };
@@ -201,7 +202,7 @@ export function ScenarioBuilder({
         }}
         className="p-3 sm:p-4"
       >
-        <TabsList>
+        <TabsList className="h-auto flex-wrap justify-start overflow-visible">
           {TYPES.map((item) => (
             <TabsTrigger key={item} value={item}>
               {t(`simulation.types.${item}`)}
@@ -215,16 +216,19 @@ export function ScenarioBuilder({
               <Label htmlFor="shift-title">{t('simulation.forms.shiftTitle')}</Label>
               <Input
                 id="shift-title"
+                aria-describedby={error ? 'shift-error' : undefined}
+              maxLength={200}
                 value={shift.title}
                 onChange={(event) => setShift((current) => ({ ...current, title: event.target.value }))}
                 placeholder={t('simulation.forms.shiftTitlePlaceholder')}
               />
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="flex flex-col gap-1.5">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div className="col-span-2 flex flex-col gap-1.5 sm:col-span-1">
                 <Label htmlFor="shift-date">{t('simulation.forms.date')}</Label>
                 <Input
                   id="shift-date"
+                aria-describedby={error ? 'shift-error' : undefined}
                   type="date"
                   value={shift.date}
                   onChange={(event) => setShift((current) => ({ ...current, date: event.target.value }))}
@@ -234,6 +238,7 @@ export function ScenarioBuilder({
                 <Label htmlFor="shift-start">{t('simulation.forms.start')}</Label>
                 <Input
                   id="shift-start"
+                aria-describedby={error ? 'shift-error' : undefined}
                   type="time"
                   value={shift.start}
                   onChange={(event) => setShift((current) => ({ ...current, start: event.target.value }))}
@@ -243,6 +248,7 @@ export function ScenarioBuilder({
                 <Label htmlFor="shift-end">{t('simulation.forms.end')}</Label>
                 <Input
                   id="shift-end"
+                aria-describedby={error ? 'shift-error' : undefined}
                   type="time"
                   value={shift.end}
                   onChange={(event) => setShift((current) => ({ ...current, end: event.target.value }))}
@@ -263,6 +269,7 @@ export function ScenarioBuilder({
               <Label htmlFor="remove-commitment">{t('simulation.forms.commitment')}</Label>
               <Select
                 id="remove-commitment"
+                aria-describedby={error ? 'remove-error' : undefined}
                 value={removeId}
                 onChange={setRemoveId}
                 options={[
@@ -293,6 +300,7 @@ export function ScenarioBuilder({
               <Label htmlFor="change-task">{t('simulation.forms.task')}</Label>
               <Select
                 id="change-task"
+                aria-describedby={error ? 'task-change-error' : undefined}
                 value={taskId}
                 onChange={setTaskId}
                 options={[
@@ -306,6 +314,7 @@ export function ScenarioBuilder({
                 <Label htmlFor="change-deadline">{t('simulation.forms.deadline')}</Label>
                 <Input
                   id="change-deadline"
+                aria-describedby={error ? 'task-change-error' : undefined}
                   type="datetime-local"
                   value={taskDeadline}
                   onChange={(event) => setTaskDeadline(event.target.value)}
@@ -315,8 +324,10 @@ export function ScenarioBuilder({
                 <Label htmlFor="change-duration">{t('simulation.forms.duration')}</Label>
                 <Input
                   id="change-duration"
+                aria-describedby={error ? 'task-change-error' : undefined}
                   type="number"
-                  min={0}
+                  min={30}
+                  max={2400}
                   step={30}
                   value={taskDuration}
                   onChange={(event) => setTaskDuration(event.target.value)}
@@ -338,16 +349,19 @@ export function ScenarioBuilder({
               <Label htmlFor="rest-title">{t('simulation.forms.restTitle')}</Label>
               <Input
                 id="rest-title"
+                aria-describedby={error ? 'rest-error' : undefined}
+              maxLength={200}
                 value={rest.title}
                 onChange={(event) => setRest((current) => ({ ...current, title: event.target.value }))}
                 placeholder={t('simulation.forms.restTitlePlaceholder')}
               />
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="flex flex-col gap-1.5">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div className="col-span-2 flex flex-col gap-1.5 sm:col-span-1">
                 <Label htmlFor="rest-date">{t('simulation.forms.date')}</Label>
                 <Input
                   id="rest-date"
+                aria-describedby={error ? 'rest-error' : undefined}
                   type="date"
                   value={rest.date}
                   onChange={(event) => setRest((current) => ({ ...current, date: event.target.value }))}
@@ -357,6 +371,7 @@ export function ScenarioBuilder({
                 <Label htmlFor="rest-start">{t('simulation.forms.start')}</Label>
                 <Input
                   id="rest-start"
+                aria-describedby={error ? 'rest-error' : undefined}
                   type="time"
                   value={rest.start}
                   onChange={(event) => setRest((current) => ({ ...current, start: event.target.value }))}
@@ -366,6 +381,7 @@ export function ScenarioBuilder({
                 <Label htmlFor="rest-end">{t('simulation.forms.end')}</Label>
                 <Input
                   id="rest-end"
+                aria-describedby={error ? 'rest-error' : undefined}
                   type="time"
                   value={rest.end}
                   onChange={(event) => setRest((current) => ({ ...current, end: event.target.value }))}
@@ -387,6 +403,7 @@ export function ScenarioBuilder({
                 <Label htmlFor="window-start">{t('simulation.forms.studyStart')}</Label>
                 <Input
                   id="window-start"
+                aria-describedby={error ? 'window-error' : undefined}
                   type="time"
                   value={window.start}
                   onChange={(event) => setWindow((current) => ({ ...current, start: event.target.value }))}
@@ -396,6 +413,7 @@ export function ScenarioBuilder({
                 <Label htmlFor="window-end">{t('simulation.forms.studyEnd')}</Label>
                 <Input
                   id="window-end"
+                aria-describedby={error ? 'window-error' : undefined}
                   type="time"
                   value={window.end}
                   onChange={(event) => setWindow((current) => ({ ...current, end: event.target.value }))}
@@ -416,6 +434,7 @@ export function ScenarioBuilder({
               <Label htmlFor="screen-reduction">{t('simulation.forms.reduction')}</Label>
               <Input
                 id="screen-reduction"
+                aria-describedby={error ? 'screen-error' : undefined}
                 type="number"
                 min={30}
                 max={1440}

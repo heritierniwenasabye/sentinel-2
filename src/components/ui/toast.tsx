@@ -86,7 +86,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={() => remove(toast.id)}
-              className="rounded-sm p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="flex size-8 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               <X aria-hidden="true" className="size-3.5" />
               <span className="sr-only">{t('common.close')}</span>

@@ -1,7 +1,8 @@
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
+import { readRecoveryBackup } from '@/lib/storage/storage';
 import { useApp } from '@/hooks/use-app';
 import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
 
@@ -28,6 +29,7 @@ export function AppShell() {
             {t('errors.storage')}
           </p>
         ) : null}
+        {readRecoveryBackup() ? <p role="status" className="border-b border-warning/30 bg-warning/10 px-4 py-2 text-xs"><Link to="/settings" className="underline">{t('recovery.found')}</Link></p> : null}
         <main
           id="main-content"
           className="mx-auto w-full max-w-content flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8"
