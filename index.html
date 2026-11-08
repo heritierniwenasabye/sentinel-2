@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" class="">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>SENTINEL 2.0 — Plan for life, not just deadlines.</title>
+    <meta
+      name="description"
+      content="SENTINEL 2.0 is a digital wellness decision engine for students: plan study time, spot scheduling conflicts, and simulate decisions before they change your week."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Prevent incorrect-theme flash by applying the stored appearance before first paint.
+      (function () {
+        try {
+          var raw = localStorage.getItem('sentinel.v2.data');
+          var theme = 'system';
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && parsed.data && parsed.data.preferences && parsed.data.preferences.theme) {
+              theme = parsed.data.preferences.theme;
+            } else if (parsed && parsed.preferences && parsed.preferences.theme) {
+              theme = parsed.preferences.theme;
+            }
+          }
+          var prefersDark =
+            window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = theme === 'dark' || (theme === 'system' && prefersDark);
+          document.documentElement.classList.toggle('dark', isDark);
+          document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+        } catch (error) {
+          /* storage unavailable: fall back to light theme */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
