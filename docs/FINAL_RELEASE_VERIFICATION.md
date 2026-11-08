@@ -46,7 +46,7 @@ new regressions were added. No tests were disabled or assertions relaxed.
 Installation emits upstream deprecation notices for Recharts 2 and whatwg-encoding;
 the audit reports zero advisories, which does not certify absence of unknown issues.
 
-Production command: `npm run preview -- --host 0.0.0.0 --port 3020`.
+Production command: `npm run preview -- --port 3020`.
 Browser command:
 
 ```sh
