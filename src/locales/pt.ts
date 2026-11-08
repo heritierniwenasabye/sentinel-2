@@ -188,7 +188,7 @@ const pt: Translation = {
       subtitle: 'As cinco tarefas mais próximas.',
       empty: 'Nenhum prazo próximo.',
       emptyHint: 'Adicione uma tarefa com prazo para vê-la aqui.',
-      remaining: 'Restante',
+      remaining: "Não agendado",
       due: 'Prazo {{date}}',
       overdue: 'Atrasada',
       noCourse: 'Sem disciplina',
@@ -462,6 +462,7 @@ const pt: Translation = {
     notEnough: 'Ainda não há dados suficientes',
   },
   simulation: {
+    weekScope: "Comparando esta semana: {{start}}–{{end}}. Redefinir descarta a prévia; Aplicar salva somente após confirmação.",
     title: 'Laboratório de simulação',
     subtitle: 'Explore decisões antes que elas mudem a sua semana.',
     intro:
@@ -496,8 +497,7 @@ const pt: Translation = {
       studyStart: 'Estudo disponível a partir de',
       studyEnd: 'Estudo disponível até',
       reduction: 'Redução semanal (minutos)',
-      reductionHint:
-        'Apenas minutos discricionários (social e entretenimento) podem ser recuperados.',
+      reductionHint: "Somente registros discricionários de redes sociais, entretenimento e outros podem ser reduzidos.",
       allocate: 'Adicionar o tempo recuperado à capacidade de estudo',
       allocateHint:
         'Apenas blocos completos de 30 minutos são adicionados, e só se houver espaço livre.',
@@ -527,6 +527,8 @@ const pt: Translation = {
         'Reduzir o tempo de tela em {{minutes}} minutos por semana e alocar no estudo',
     },
     compare: {
+      fixed: "Compromissos fixos",
+      noStudy: "Nenhum estudo está planejado em nenhum dos planos nesta semana.",
       title: 'Comparação',
       subtitle: 'Os dois planos usam as mesmas regras e preferências.',
       baseline: 'Plano atual',
@@ -540,7 +542,7 @@ const pt: Translation = {
       minutesValue: '{{minutes}} min',
       scoreValue: '{{score}} / 100',
       chartTitle: 'Carga diária',
-      chartSubtitle: 'Minutos de estudo planejados por dia.',
+      chartSubtitle: "Horas de estudo planejadas por dia.",
       chartBaseline: 'Atual',
       chartSimulated: 'Simulado',
       chartEmpty: 'Nenhuma diferença no estudo planejado entre os planos.',
@@ -555,8 +557,7 @@ const pt: Translation = {
       apply: 'Aplicar cenário',
       reset: 'Redefinir simulação',
       applyTitle: 'Aplicar este cenário?',
-      applyDescription:
-        'Estas mudanças serão gravadas nos seus dados locais. Você ainda poderá editá-las.',
+      applyDescription: "Confirme para salvar as alterações neste navegador. Redefinir descarta apenas uma prévia não aplicada; não há desfazer automático após aplicar.",
       applyConfirm: 'Aplicar mudanças',
       cancel: 'Continuar simulando',
       applied: 'Cenário aplicado',
@@ -565,6 +566,8 @@ const pt: Translation = {
         'A redução do tempo de tela é hipotética. Apenas a capacidade alocada é salva.',
     },
     explanations: {
+      fixedUp: "Os compromissos fixos ocupam {{minutes}} minutos a mais nesta semana.",
+      fixedDown: "Os compromissos fixos ocupam {{minutes}} minutos a menos nesta semana.",
       noScenario: 'Adicione uma mudança para ver como ela afeta a sua semana.',
       plannedUp: 'O plano simulado programa {{minutes}} minutos a mais de estudo.',
       plannedDown: 'O plano simulado programa {{minutes}} minutos a menos de estudo.',
@@ -581,10 +584,11 @@ const pt: Translation = {
       recovered: 'Até {{minutes}} minutos discricionários são recuperados por semana.',
       infeasible:
         'Esta mudança torna a semana inviável: parte do trabalho já não cabe.',
-      noChange: 'Esta mudança não altera nenhuma métrica calculada.',
+      noChange: "O estudo planejado, as tarefas não agendadas, a capacidade disponível e o número de conflitos não mudam.",
     },
   },
   habits: {
+    logScrollHint: "Role dentro deste registro para ver todas as entradas.",
     title: 'Hábitos digitais',
     subtitle: 'Entenda para onde vai o seu tempo de tela.',
     disclaimer:
@@ -787,7 +791,7 @@ const pt: Translation = {
       maxDaily: 'Estudo diário máximo (minutos)',
       maxDailyHint: 'Somando todas as tarefas de um dia.',
       minBreak: 'Pausa mínima (minutos)',
-      minBreakHint: 'Inserida após 90 minutos de estudo contínuo.',
+      minBreakHint: "Entre blocos de estudo, inclusive ao trocar de tarefa.",
       sleepStart: 'Sono ou indisponível a partir de',
       sleepEnd: 'Até',
       sleepHint: 'Nenhum bloco de estudo é colocado dentro desta janela.',
@@ -818,14 +822,14 @@ const pt: Translation = {
       title: 'Gestão de dados',
       subtitle: 'Tudo permanece neste navegador. Nada é enviado.',
       export: 'Exportar dados (JSON)',
-      exportHint: 'Inclui tarefas, compromissos, tempo de tela e preferências.',
+      exportHint: "Inclui cursos, tarefas, compromissos, tempo de tela, metas e preferências.",
       import: 'Importar dados (JSON)',
       importHint: 'Registros inválidos são ignorados e informados.',
       demo: 'Carregar dados de demonstração',
       demoHint: 'Substitui os dados atuais pelo conjunto de Alex Morgan.',
       clear: 'Apagar todos os dados',
-      clearHint: 'Remove tudo o que o SENTINEL guardou neste navegador.',
-      cleared: 'Todos os dados locais foram removidos',
+      clearHint: "Remove os registros e redefine as preferências de estudo. Aparência, idioma e backups de recuperação são mantidos.",
+      cleared: "Registros do espaço apagados",
       imported: 'Dados importados',
       importedWithErrors: 'Importado com {{count}} registros ignorados',
       exported: 'Exportação baixada',
@@ -834,8 +838,7 @@ const pt: Translation = {
       demoBody:
         'Tarefas, compromissos, tempo de tela e preferências atuais serão substituídos pela demonstração de Alex Morgan. Exporte antes se quiser manter seus dados.',
       clearTitle: 'Apagar todos os dados?',
-      clearBody:
-        'Isto exclui cada tarefa, compromisso, registro de tempo de tela e preferência salvos neste navegador. Não pode ser desfeito.',
+      clearBody: "Excluir cursos, tarefas, compromissos, uso e metas, e redefinir as preferências de estudo? Aparência, idioma e backups são mantidos. Exporte primeiro; não há desfazer automático.",
       importTitle: 'Importar este arquivo?',
       importBody:
         'Os dados importados substituem o que está atualmente salvo neste navegador.',

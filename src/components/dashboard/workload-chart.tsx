@@ -107,7 +107,7 @@ export function WorkloadChart({ schedule }: WorkloadChartProps) {
             aria-label={t('a11y.workloadChart')}
           >
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={rows} margin={{ top: 4, right: 4, left: -20, bottom: 0 }} barSize={18}>
+              <BarChart data={rows} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barSize={18}>
                 <CartesianGrid
                   strokeDasharray="2 4"
                   stroke="hsl(var(--border))"
@@ -124,7 +124,7 @@ export function WorkloadChart({ schedule }: WorkloadChartProps) {
                   tickLine={false}
                   axisLine={false}
                   tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
-                  width={44}
+                  width={48}
                   tickFormatter={(value: number) => format.number(value)}
                 />
                 <Tooltip

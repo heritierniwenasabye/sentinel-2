@@ -4,7 +4,9 @@
 
 A digital wellness decision engine for university students.
 
-Current release-hardening evidence: [`docs/HARDENING_ACCEPTANCE.md`](docs/HARDENING_ACCEPTANCE.md). SENTINEL turns coursework, classes, work
+Current product polish/demo gate: [`docs/PRODUCT_POLISH.md`](docs/PRODUCT_POLISH.md).
+
+Preceding release-hardening evidence: [`docs/HARDENING_ACCEPTANCE.md`](docs/HARDENING_ACCEPTANCE.md). SENTINEL turns coursework, classes, work
 shifts, appointments, rest and screen-time habits into a realistic weekly plan — then lets you simulate
 decisions before you commit to them.
 
@@ -219,7 +221,7 @@ review of tone and domain terms is recommended before public release.
 
 ## Tests
 
-The current suite includes 136 unit/integration tests in 13 files, deterministic generated workloads,
+The current suite includes 146 unit/integration tests in 14 files, deterministic generated workloads,
 recovery/quota/import validation, goals, simulation isolation and locale checks. Playwright runs real
 student workflows against Chromium, with console/runtime errors treated as failures, responsive checks
 and axe WCAG scans. Exact commands, final counts and evidence boundaries are maintained in

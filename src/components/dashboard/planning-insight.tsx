@@ -40,9 +40,6 @@ export function PlanningInsight({ schedule, analysis }: PlanningInsightProps) {
               {t(insight.key, insight.params)}
             </p>
           </div>
-          <p className="text-2xs leading-relaxed text-muted-foreground">
-            {t('insights.formula.totalHint')}
-          </p>
         </div>
       ) : (
         <div className="flex h-full min-h-[120px] flex-col items-center justify-center gap-1 text-center">

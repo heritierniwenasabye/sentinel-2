@@ -15,7 +15,7 @@ interface TooltipItem {
   value?: number | string;
 }
 
-function ComparisonTooltip({
+export function ComparisonTooltip({
   active,
   payload,
   label,
@@ -26,6 +26,7 @@ function ComparisonTooltip({
   label?: string;
   labels: Record<string, string>;
 }) {
+  const format = useFormatters();
   if (!active || !payload || payload.length === 0) return null;
   return (
     <div className="rounded-md border border-border bg-card px-3 py-2 text-xs shadow-sm">
@@ -34,7 +35,7 @@ function ComparisonTooltip({
         {payload.map((item) => (
           <li key={String(item.dataKey)} className="flex items-center justify-between gap-4">
             <span className="text-muted-foreground">{labels[String(item.dataKey)] ?? ''}</span>
-            <span className="tabular-nums text-foreground">{Number(item.value ?? 0)} min</span>
+            <span className="tabular-nums text-foreground">{format.duration(Number(item.value ?? 0) * 60)}</span>
           </li>
         ))}
       </ul>
@@ -68,7 +69,7 @@ export function ComparisonChart({ baseline, simulated }: ComparisonChartProps) {
         <>
           <div className="h-[240px] w-full" role="img" aria-label={t('a11y.simulationChart')}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={rows} margin={{ top: 4, right: 4, left: -20, bottom: 0 }} barSize={16}>
+              <BarChart data={rows} margin={{ top: 4, right: 4, left: 0, bottom: 0 }} barSize={16}>
                 <CartesianGrid strokeDasharray="2 4" stroke="hsl(var(--border))" vertical={false} />
                 <XAxis
                   dataKey="day"
@@ -81,7 +82,7 @@ export function ComparisonChart({ baseline, simulated }: ComparisonChartProps) {
                   tickLine={false}
                   axisLine={false}
                   tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
-                  width={44}
+                  width={48}
                   tickFormatter={(value: number) => format.number(value)}
                 />
                 <Tooltip
@@ -117,8 +118,8 @@ export function ComparisonChart({ baseline, simulated }: ComparisonChartProps) {
               {rows.map((row) => (
                 <tr key={row.dateKey}>
                   <th scope="row">{format.weekday(row.dateKey)}</th>
-                  <td>{row.baseline}</td>
-                  <td>{row.simulated}</td>
+                  <td>{format.duration(row.baseline * 60)}</td>
+                  <td>{format.duration(row.simulated * 60)}</td>
                 </tr>
               ))}
             </tbody>
@@ -126,7 +127,7 @@ export function ComparisonChart({ baseline, simulated }: ComparisonChartProps) {
         </>
       ) : (
         <div className="flex h-[180px] items-center justify-center">
-          <p className="text-sm text-muted-foreground">{t('simulation.compare.chartEmpty')}</p>
+          <p className="text-sm text-muted-foreground">{t('simulation.compare.noStudy')}</p>
         </div>
       )}
     </SectionCard>

@@ -19,11 +19,9 @@ export function PendingChanges({ ops, data, onRemove }: PendingChangesProps) {
       <div className="flex items-start justify-between gap-3 border-b border-border px-4 py-3.5">
         <div>
           <h2 className="text-sm font-semibold text-foreground">{t('simulation.pending.title')}</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {ops.length === 0
-              ? t('simulation.pending.empty')
-              : t('simulation.pending.subtitle', { count: ops.length })}
-          </p>
+          {ops.length > 0 ? <p className="mt-0.5 text-xs text-muted-foreground">
+            {t('simulation.pending.subtitle', { count: ops.length })}
+          </p> : null}
         </div>
       </div>
       {ops.length === 0 ? (
@@ -45,7 +43,7 @@ export function PendingChanges({ ops, data, onRemove }: PendingChangesProps) {
                 type="button"
                 onClick={() => onRemove(index)}
                 aria-label={t('simulation.pending.remove')}
-                className="rounded-sm p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="flex size-8 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
                 <X aria-hidden="true" className="size-3.5" />
               </button>

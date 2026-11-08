@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { AlertCircle, ArrowRight, CheckCircle2, Info } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Info } from 'lucide-react';
 import type { Explanation } from '@/types';
 import { SectionCard } from '@/components/common/section-card';
 import { cn } from '@/lib/utils';
@@ -35,7 +35,6 @@ export function Explanations({ explanations }: { explanations: Explanation[] }) 
                 <p className="text-xs leading-relaxed text-foreground">
                   {t(explanation.key, explanation.params)}
                 </p>
-                <ArrowRight aria-hidden="true" className="ml-auto mt-0.5 size-3 shrink-0 opacity-40" />
               </li>
             );
           })}

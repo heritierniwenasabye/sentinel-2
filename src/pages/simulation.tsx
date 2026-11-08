@@ -1,3 +1,4 @@
+import { addDays } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Play, RotateCcw, TriangleAlert } from 'lucide-react';
@@ -59,7 +60,7 @@ export function SimulationPage() {
       <PageHeader
         title={t('simulation.title')}
         subtitle={t('simulation.subtitle')}
-        meta={<p className="max-w-2xl text-xs leading-relaxed text-muted-foreground">{t('simulation.intro')}</p>}
+        meta={<div className="flex max-w-2xl flex-col gap-1 text-xs leading-relaxed text-muted-foreground"><p>{t('simulation.intro')}</p><p>{t('simulation.weekScope', { start: format.date(weekStart, 'd MMM'), end: format.date(addDays(weekStart, 6), 'd MMM yyyy') })}</p></div>}
         actions={
           <>
             <Button

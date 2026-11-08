@@ -1,5 +1,8 @@
 # SENTINEL 2.0 — Current engineering handoff
 
+Latest product/demo quality gate: [PRODUCT_POLISH.md](PRODUCT_POLISH.md) — 146 unit/integration tests and 19 production browser tests, with the existing responsive/accessibility/security gates retained.
+
+
 Continue on `audit/independent-release-review`, PR #1. Do not merge or deploy without owner approval.
 The starting release was `98d72ca`; the initial independent audit was `8a3bb26`. The current hardening
 results, acceptance matrix and exact changed-file list are in [HARDENING_ACCEPTANCE.md](HARDENING_ACCEPTANCE.md).

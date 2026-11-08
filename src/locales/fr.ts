@@ -187,7 +187,7 @@ const fr: Translation = {
       subtitle: 'Les cinq devoirs les plus proches.',
       empty: 'Aucune échéance à venir.',
       emptyHint: 'Ajoutez une tâche avec une échéance pour la voir ici.',
-      remaining: 'Restant',
+      remaining: "Non planifié",
       due: 'Échéance {{date}}',
       overdue: 'En retard',
       noCourse: 'Sans cours',
@@ -465,6 +465,7 @@ const fr: Translation = {
     notEnough: 'Pas encore assez de données',
   },
   simulation: {
+    weekScope: "Comparaison de cette semaine : {{start}}–{{end}}. Réinitialiser abandonne l’aperçu ; Appliquer enregistre après confirmation.",
     title: 'Laboratoire de simulation',
     subtitle: 'Explorez vos décisions avant qu’elles ne changent votre semaine.',
     intro:
@@ -499,8 +500,7 @@ const fr: Translation = {
       studyStart: 'Étude disponible à partir de',
       studyEnd: 'Étude disponible jusqu’à',
       reduction: 'Réduction hebdomadaire (minutes)',
-      reductionHint:
-        'Seules les minutes discrétionnaires (social, divertissement) peuvent être récupérées.',
+      reductionHint: "Seules les saisies discrétionnaires des catégories social, divertissement et autre peuvent être réduites.",
       allocate: 'Ajouter le temps récupéré à ma capacité d’étude',
       allocateHint:
         'Seuls des blocs entiers de 30 minutes sont ajoutés, et seulement s’il reste de la place libre.',
@@ -530,6 +530,8 @@ const fr: Translation = {
         'Réduire le temps d’écran de {{minutes}} minutes par semaine et l’affecter à l’étude',
     },
     compare: {
+      fixed: "Engagements fixes",
+      noStudy: "Aucune étude n’est planifiée dans les deux plans cette semaine.",
       title: 'Comparaison',
       subtitle: 'Les deux plans utilisent les mêmes règles et préférences.',
       baseline: 'Plan actuel',
@@ -543,7 +545,7 @@ const fr: Translation = {
       minutesValue: '{{minutes}} min',
       scoreValue: '{{score}} / 100',
       chartTitle: 'Charge quotidienne',
-      chartSubtitle: 'Minutes d’étude planifiées par jour.',
+      chartSubtitle: "Heures d’étude planifiées par jour.",
       chartBaseline: 'Actuel',
       chartSimulated: 'Simulé',
       chartEmpty: 'Aucune différence de temps d’étude planifié entre les deux plans.',
@@ -558,8 +560,7 @@ const fr: Translation = {
       apply: 'Appliquer le scénario',
       reset: 'Réinitialiser la simulation',
       applyTitle: 'Appliquer ce scénario ?',
-      applyDescription:
-        'Ces changements seront écrits dans vos données locales. Vous pourrez encore les modifier.',
+      applyDescription: "Confirmez pour enregistrer ces changements localement. Réinitialiser abandonne uniquement un aperçu non appliqué ; il n’y a pas d’annulation automatique après application.",
       applyConfirm: 'Appliquer les changements',
       cancel: 'Continuer la simulation',
       applied: 'Scénario appliqué',
@@ -568,6 +569,8 @@ const fr: Translation = {
         'Une réduction du temps d’écran reste hypothétique. Seule la capacité allouée est enregistrée.',
     },
     explanations: {
+      fixedUp: "Les engagements fixes occupent {{minutes}} minutes de plus cette semaine.",
+      fixedDown: "Les engagements fixes occupent {{minutes}} minutes de moins cette semaine.",
       noScenario: 'Ajoutez un changement pour voir son effet sur votre semaine.',
       plannedUp: 'Le plan simulé prévoit {{minutes}} minutes d’étude de plus.',
       plannedDown: 'Le plan simulé prévoit {{minutes}} minutes d’étude de moins.',
@@ -584,10 +587,11 @@ const fr: Translation = {
       recovered: 'Jusqu’à {{minutes}} minutes discrétionnaires sont récupérées par semaine.',
       infeasible:
         'Ce changement rend la semaine irréalisable : certains devoirs ne tiennent plus.',
-      noChange: 'Ce changement ne modifie aucune mesure calculée.',
+      noChange: "L’étude planifiée, les devoirs non planifiés, la capacité disponible et le nombre de conflits restent inchangés.",
     },
   },
   habits: {
+    logScrollHint: "Faites défiler ce journal pour voir toutes les saisies.",
     title: 'Habitudes numériques',
     subtitle: 'Comprenez où passe votre temps d’écran.',
     disclaimer:
@@ -791,7 +795,7 @@ const fr: Translation = {
       maxDaily: 'Étude quotidienne maximale (minutes)',
       maxDailyHint: 'Tous devoirs confondus sur une journée.',
       minBreak: 'Pause minimale (minutes)',
-      minBreakHint: 'Insérée après 90 minutes d’étude continue.',
+      minBreakHint: "Entre les blocs d’étude, y compris lors d’un changement de devoir.",
       sleepStart: 'Sommeil ou indisponibilité à partir de',
       sleepEnd: 'Jusqu’à',
       sleepHint: 'Aucun bloc d’étude n’est placé dans cette fenêtre.',
@@ -822,14 +826,14 @@ const fr: Translation = {
       title: 'Gestion des données',
       subtitle: 'Tout reste dans ce navigateur. Rien n’est envoyé.',
       export: 'Exporter les données (JSON)',
-      exportHint: 'Inclut tâches, engagements, temps d’écran et préférences.',
+      exportHint: "Inclut cours, devoirs, engagements, temps d’écran, objectifs et préférences.",
       import: 'Importer des données (JSON)',
       importHint: 'Les enregistrements invalides sont ignorés et signalés.',
       demo: 'Charger les données de démonstration',
       demoHint: 'Remplace les données actuelles par le jeu d’Alex Morgan.',
       clear: 'Effacer toutes les données',
-      clearHint: 'Supprime tout ce que SENTINEL a stocké dans ce navigateur.',
-      cleared: 'Toutes les données locales ont été supprimées',
+      clearHint: "Supprime les données de l’espace et réinitialise les préférences d’étude. Apparence, langue et sauvegardes de récupération sont conservées.",
+      cleared: "Données de l’espace effacées",
       imported: 'Données importées',
       importedWithErrors: 'Importé avec {{count}} enregistrements ignorés',
       exported: 'Export téléchargé',
@@ -838,8 +842,7 @@ const fr: Translation = {
       demoBody:
         'Les tâches, engagements, temps d’écran et préférences actuels seront remplacés par la démonstration d’Alex Morgan. Exportez d’abord si vous voulez conserver vos données.',
       clearTitle: 'Effacer toutes les données ?',
-      clearBody:
-        'Cela supprime chaque tâche, engagement, entrée de temps d’écran et préférence stockés dans ce navigateur. Action irréversible.',
+      clearBody: "Supprimer les cours, devoirs, engagements, utilisations et objectifs, puis réinitialiser les préférences d’étude ? Apparence, langue et sauvegardes sont conservées. Exportez d’abord ; pas d’annulation automatique.",
       importTitle: 'Importer ce fichier ?',
       importBody:
         'Les données importées remplacent ce qui est actuellement stocké dans ce navigateur.',

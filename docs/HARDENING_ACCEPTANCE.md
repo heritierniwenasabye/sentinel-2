@@ -1,5 +1,8 @@
 # SENTINEL 2.0 — Release hardening acceptance
 
+> This records the engineering hardening gate at `cdba8ff`. See [PRODUCT_POLISH.md](PRODUCT_POLISH.md) for the subsequent product/demo review and latest regression totals.
+
+
 Date: 7 November 2026 America/Chicago (8 November UTC in executor logs).
 Repository: `heritierniwenasabye/sentinel-2` · PR #1 · branch `audit/independent-release-review`.
 Hardening baseline: `8a3bb260a622278cbb6b1b0e5b8da4b8e29a0b91`; original release baseline: `98d72ca`.

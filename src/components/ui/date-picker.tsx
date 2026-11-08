@@ -138,6 +138,7 @@ export function DatePicker({ id, value, onChange, invalid, describedBy, classNam
         break;
       case 'Escape':
         event.preventDefault();
+        event.stopPropagation();
         close();
         break;
       default:
@@ -198,7 +199,7 @@ export function DatePicker({ id, value, onChange, invalid, describedBy, classNam
               data-testid="calendar-prev"
               onClick={() => shiftMonth(-1)}
               aria-label={t('common.previousMonth')}
-              className="rounded-sm p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+              className="flex size-8 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
             >
               <ChevronLeft aria-hidden="true" className="size-4" />
             </button>
@@ -210,7 +211,7 @@ export function DatePicker({ id, value, onChange, invalid, describedBy, classNam
               data-testid="calendar-next"
               onClick={() => shiftMonth(1)}
               aria-label={t('common.nextMonth')}
-              className="rounded-sm p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+              className="flex size-8 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
             >
               <ChevronRight aria-hidden="true" className="size-4" />
             </button>
