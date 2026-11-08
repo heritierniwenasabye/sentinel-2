@@ -1,4 +1,4 @@
-import { addDays, isValid, parseISO, startOfDay } from 'date-fns';
+import { addDays, differenceInCalendarDays, isValid, parseISO, startOfDay } from 'date-fns';
 import type { Commitment, CommitmentOccurrence } from '@/types';
 import { combineDayAndTime, minutesToTime, toDateKey, toLocalIso } from '@/lib/date';
 
@@ -62,10 +62,12 @@ export function expandCommitments(
       ? startOfDay(parseISO(`${commitment.recurrenceUntil}T00:00:00`))
       : null;
     const timeOfDay = minutesToTime(start.getHours() * 60 + start.getMinutes());
-    const durationMs = end.getTime() - start.getTime();
+    const daySpan = differenceInCalendarDays(end, start);
+    const endTime = minutesToTime(end.getHours() * 60 + end.getMinutes());
 
     // Never generate an occurrence before the series started or after it ends.
-    let cursor = windowStart > seriesStart ? windowStart : seriesStart;
+    const earliest = addDays(windowStart, -daySpan);
+    let cursor = earliest > seriesStart ? earliest : seriesStart;
     const lastDay = until && until < windowEnd ? until : windowEnd;
     let guard = 0;
 
@@ -74,7 +76,7 @@ export function expandCommitments(
       const key = toDateKey(cursor);
       if (weekdays.has(cursor.getDay()) && !exceptions.has(key)) {
         const occurrenceStart = combineDayAndTime(cursor, timeOfDay);
-        const occurrenceEnd = new Date(occurrenceStart.getTime() + durationMs);
+        const occurrenceEnd = combineDayAndTime(addDays(cursor, daySpan), endTime);
         if (occurrenceStart >= seriesStart && occurrenceEnd > rangeStart && occurrenceStart < rangeEnd) {
           occurrences.push({
             ...commitment,

@@ -201,6 +201,7 @@ const es: Translation = {
     commitmentsSubtitle: 'Clases, turnos, citas, tiempo personal y descanso.',
     commitmentsEmpty: 'No hay compromisos esta semana.',
     commitmentsEmptyHint: 'Añade una clase, un turno o una cita.',
+    laterWork: "Las tareas posteriores no se incluyen en este plan ni en sus totales. Avanza a otra semana para planificarlas; siguen pendientes.",
     scheduleScope:
       'Los bloques de estudio cubren las tareas que vencen esta semana y en los próximos siete días.',
     unscheduledReasonOverdue: 'La fecha límite ya pasó',

@@ -32,7 +32,9 @@ export function minutesToTime(totalMinutes: number): string {
 /** Combine a calendar day with an "HH:mm" time. */
 export function combineDayAndTime(day: Date, time: string): Date {
   const start = startOfDay(day);
-  return new Date(start.getTime() + parseTimeToMinutes(time) * 60_000);
+  const minutes = parseTimeToMinutes(time);
+  start.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
+  return start;
 }
 
 export function startOfWeekMonday(date: Date): Date {

@@ -58,6 +58,8 @@ npm ci
 npm run dev        # http://localhost:3000
 npm run typecheck  # tsc --noEmit (strict)
 npm run test       # vitest run
+npx playwright install chromium # one-time browser setup (Node 20+)
+npm run test:e2e   # real Chromium student workflows and 30 layout combinations
 npm run build      # typecheck + production bundle in dist/
 npm run preview    # serve the production build
 ```
@@ -88,7 +90,7 @@ it through `useWeekSchedule`, so the planner, overview, insights and simulation 
 5. **Placement.** Chronological slot filling. Never after the deadline, never past the daily cap, at most
    90 continuous minutes, then a break of at least the configured minimum.
 6. **Remaining work.** `estimatedMinutes − completedMinutes` is scheduled and counted as demand.
-7. **Reporting.** Anything that does not fit is listed as unscheduled with its remaining minutes and a
+7. **Reporting.** Later work is shown separately in the planner and excluded from this week’s totals. Sub-slot remaining work stays explicitly unscheduled. Anything in scope that does not fit is listed as unscheduled with its remaining minutes and a
    reason (`overdue` or `insufficient-time`). Nothing is silently dropped.
 
 **Granularity:** 30-minute slots. A 90-minute assignment receives 90 scheduled minutes when the week
@@ -213,7 +215,7 @@ review of tone and domain terms is recommended before public release.
 
 ## Tests
 
-`npm test` runs 75 tests in 11 files:
+`npm test` now runs 85 tests in 12 files. The independent pass adds 10 scheduling regressions and a Playwright browser suite; see [`docs/INDEPENDENT_AUDIT.md`](docs/INDEPENDENT_AUDIT.md). The original 75 tests cover:
 
 - Scheduling: ordering, priority tie-breaks, look-ahead window, non-overlap, deadline safety,
   infeasible workloads and reported remainders, completed-minute subtraction.
@@ -243,7 +245,7 @@ npm run build      → exit 0
   css      31.86 kB (6.74 kB gzip)
 ```
 
-A headless end-to-end suite is not committed: Playwright could not run in this build environment.
+A repeatable Playwright suite is now committed in `e2e/`. Run `npm run test:e2e` after installing Chromium. To use a system browser, set `CHROMIUM_PATH=/usr/bin/chromium`. See [`docs/INDEPENDENT_AUDIT.md`](docs/INDEPENDENT_AUDIT.md) for the independent results; the earlier results below are historical.
 
 **Manual browser pass (release audit):** with storage cleared, the real app confirmed an empty
 workspace, skipping onboarding, and creating a High-priority 90-minute assignment through the calendar.
@@ -277,6 +279,7 @@ A judged script is in [`docs/HACKATHON_DEMO.md`](docs/HACKATHON_DEMO.md).
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — layers, data model, algorithm, persistence.
 - [`docs/DEVELOPMENT_LIFECYCLE.md`](docs/DEVELOPMENT_LIFECYCLE.md) — planning, changes, testing and AI assistance.
 - [`docs/HACKATHON_DEMO.md`](docs/HACKATHON_DEMO.md) — three-minute presentation.
+- [`docs/INDEPENDENT_AUDIT.md`](docs/INDEPENDENT_AUDIT.md) — independent regression fixes and browser verification.
 - [`docs/RELEASE_AUDIT.md`](docs/RELEASE_AUDIT.md) — what was verified, how, and what remains.
 - [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md) — unsupported and unverified behaviour.
 - [`docs/CODEX_HANDOFF.md`](docs/CODEX_HANDOFF.md) — architecture, commands and prioritized next tasks.

@@ -200,6 +200,7 @@ const fr: Translation = {
     commitmentsSubtitle: 'Cours, services, rendez-vous, temps personnel et repos.',
     commitmentsEmpty: 'Aucun engagement cette semaine.',
     commitmentsEmptyHint: 'Ajoutez un cours, un service ou un rendez-vous.',
+    laterWork: "Les devoirs ultérieurs ne sont pas inclus dans ce plan ni ses totaux. Passez à une semaine ultérieure pour les planifier ; ils restent à terminer.",
     scheduleScope:
       'Les blocs d’étude couvrent les devoirs à rendre cette semaine et dans les sept jours suivants.',
     unscheduledReasonOverdue: 'Échéance déjà passée',

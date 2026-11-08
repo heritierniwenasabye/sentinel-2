@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, parseISO } from 'date-fns';
+import { addDays, format, parseISO } from 'date-fns';
 import { Plus } from 'lucide-react';
 import type { Commitment, ScenarioOp, Task, UserPreferences } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { useFormatters } from '@/hooks/use-formatters';
 import { createId } from '@/lib/utils';
+import { expandCommitments } from '@/lib/recurrence';
 import { toLocalIso } from '@/lib/date';
 
 type ScenarioType =
@@ -69,11 +70,11 @@ export function ScenarioBuilder({
   });
   const [screen, setScreen] = useState({ minutes: '180', allocate: false });
 
-  const weekEnd = new Date(weekStart.getTime() + 7 * 86400000);
+  const weekEnd = addDays(weekStart, 7);
   const weekCommitments = useMemo(
     () =>
       commitments
-        .filter((commitment) => parseISO(commitment.end) > weekStart && parseISO(commitment.start) < weekEnd)
+        .filter((commitment) => expandCommitments([commitment], weekStart, weekEnd).length > 0)
         .sort((a, b) => parseISO(a.start).getTime() - parseISO(b.start).getTime()),
     [commitments, weekStart, weekEnd],
   );
@@ -201,7 +202,7 @@ export function ScenarioBuilder({
         }}
         className="p-3 sm:p-4"
       >
-        <TabsList>
+        <TabsList className="h-auto flex-wrap justify-start overflow-visible">
           {TYPES.map((item) => (
             <TabsTrigger key={item} value={item}>
               {t(`simulation.types.${item}`)}

@@ -197,6 +197,7 @@ const en = {
     commitmentsSubtitle: 'Classes, shifts, appointments, personal time and rest.',
     commitmentsEmpty: 'No commitments this week.',
     commitmentsEmptyHint: 'Add a class, shift or appointment.',
+    laterWork: "Later coursework is not included in this plan or its totals. Move to a later week to plan it; it is still unfinished.",
     scheduleScope:
       'Study blocks are placed for coursework due this week and within the next seven days.',
     unscheduledReasonOverdue: 'Deadline already passed',

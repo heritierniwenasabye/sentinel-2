@@ -13,8 +13,7 @@ flattering.
 - A payload that fails validation or JSON parsing is copied verbatim to `sentinel.v2.data.corrupt`
   before the app starts empty, but **there is no UI to restore it**. Recovery requires devtools or an
   export from another source.
-- Imported JSON has no file-size or record-count cap. A very large file can freeze the tab before it
-  is rejected; the app does not stream imports.
+- JSON uploads have a 5 MiB file-size guard. CSV imports have no size cap; neither format has a record-count cap or streaming parser.
 - The JSON export contains the optional display name and all entered data in plain text. It is not
   encrypted.
 - No storage-quota handling beyond a warning banner when a write fails; the in-memory session keeps
@@ -34,7 +33,7 @@ flattering.
 - No travel time, task dependencies, or per-assignment preferred times.
 - Datetimes are stored as local wall-clock ISO strings without an offset. Moving to another time zone
   keeps the wall-clock time, not the absolute instant. DST transitions are handled by local date
-  arithmetic, but no automated DST test exists.
+  arithmetic. Independent regression tests cover both 2026 DST transitions in America/Chicago; other transition rules and ambiguous/nonexistent local times are not exhaustively tested.
 - A day whose preferred study window would wrap midnight is rejected by the preference normaliser;
   study windows must start and end on the same day.
 
@@ -102,3 +101,10 @@ flattering.
   (`vercel.json` and `public/_redirects` are included).
 - No server-side rendering, no PWA/offline service worker, no crash reporting, no analytics.
 - Nothing in this repository is deployed or published by the audit; no credentials are included.
+
+## Independent audit update
+
+See [INDEPENDENT_AUDIT.md](INDEPENDENT_AUDIT.md) for this branch’s verified results and remaining gaps.
+Persistent digital-usage goals are not implemented; reduction amounts are scenario inputs. The schedule
+hook recomputes on data/week changes, not continuously as the clock advances; refresh a long-lived
+tab before a live demo. Google Fonts is an external request; core data processing is local.

@@ -201,6 +201,7 @@ const pt: Translation = {
     commitmentsSubtitle: 'Aulas, turnos, consultas, tempo pessoal e descanso.',
     commitmentsEmpty: 'Nenhum compromisso nesta semana.',
     commitmentsEmptyHint: 'Adicione uma aula, turno ou consulta.',
+    laterWork: "As tarefas futuras não estão incluídas neste plano nem nos totais. Avance para outra semana para as planejar; continuam pendentes.",
     scheduleScope:
       'Os blocos de estudo cobrem os trabalhos com prazo nesta semana e nos próximos sete dias.',
     unscheduledReasonOverdue: 'O prazo já passou',

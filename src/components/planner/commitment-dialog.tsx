@@ -71,7 +71,7 @@ function initialState(
   commitment?: Commitment | null,
   occurrence?: CommitmentOccurrence | null,
 ): FormState {
-  const source = occurrence ?? commitment ?? null;
+  const source = commitment ?? occurrence ?? null;
   if (source) {
     const weekly = isRecurring(source);
     return {
@@ -408,7 +408,11 @@ export function CommitmentDialog({
                   id="commitment-scope"
                   value={form.scope}
                   onChange={(next) =>
-                    setForm((current) => ({ ...current, scope: next as EditScope }))
+                    setForm((current) => ({
+                      ...current, scope: next as EditScope,
+                      start: toInputDateTime((next === 'occurrence' ? occurrence : series)!.start),
+                      end: toInputDateTime((next === 'occurrence' ? occurrence : series)!.end),
+                    }))
                   }
                   options={scopeOptions}
                 />

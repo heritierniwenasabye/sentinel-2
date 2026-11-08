@@ -194,6 +194,7 @@ const zhCN: Translation = {
     commitmentsSubtitle: '课程、班次、预约、个人时间与休息。',
     commitmentsEmpty: '本周没有固定安排。',
     commitmentsEmptyHint: '添加课程、班次或预约。',
+    laterWork: "较晚截止的作业不计入本周计划及合计。请切换到后续周进行安排；这些作业仍未完成。",
     scheduleScope: '学习时段用于本周及未来七天内到期的任务。',
     unscheduledReasonOverdue: '截止日期已过',
     unscheduledReasonInsufficient: '截止前可用时间不足',

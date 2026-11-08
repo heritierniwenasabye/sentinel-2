@@ -15,6 +15,7 @@ import {
   MAX_BLOCK_MINUTES,
   SLOT_MINUTES,
   parseTimeToMinutes,
+  combineDayAndTime,
   startOfWeekMonday,
   toDateKey,
   ceilToSlot,
@@ -115,11 +116,11 @@ export function sleepIntervals(dayStart: Date, preferences: UserPreferences): In
   if (start > end) {
     // Sleep wraps midnight: the small hours and the late evening are both unavailable.
     return [
-      { start: new Date(dayStart), end: addMinutes(dayStart, end) },
-      { start: addMinutes(dayStart, start), end: addMinutes(addDays(dayStart, 1), end) },
+      { start: new Date(dayStart), end: combineDayAndTime(dayStart, preferences.sleepEnd) },
+      { start: combineDayAndTime(dayStart, preferences.sleepStart), end: combineDayAndTime(addDays(dayStart, 1), preferences.sleepEnd) },
     ];
   }
-  return [{ start: addMinutes(dayStart, start), end: addMinutes(dayStart, end) }];
+  return [{ start: combineDayAndTime(dayStart, preferences.sleepStart), end: combineDayAndTime(dayStart, preferences.sleepEnd) }];
 }
 
 /* ------------------------------------------------------------------ */
@@ -144,8 +145,8 @@ function buildDayPlan(
   const dayEnd = addDays(dayStart, 1);
   const studyStartMin = parseTimeToMinutes(preferences.studyStart);
   const studyEndMin = parseTimeToMinutes(preferences.studyEnd);
-  const windowStart = addMinutes(dayStart, studyStartMin);
-  const windowEnd = addMinutes(dayStart, studyEndMin);
+  const windowStart = combineDayAndTime(dayStart, preferences.studyStart);
+  const windowEnd = combineDayAndTime(dayStart, preferences.studyEnd);
 
   const busy: Interval[] = [];
   for (const interval of sleepIntervals(dayStart, preferences)) {
@@ -167,7 +168,6 @@ function buildDayPlan(
     studyEndMin > studyStartMin
       ? mergeIntervals(subtractIntervals({ start: windowStart, end: windowEnd }, merged))
       : [];
-  const freeMinutes = free.reduce((total, interval) => total + differenceInMinutes(interval.end, interval.start), 0);
 
   const slots: StudySlot[] = [];
   for (const interval of free) {
@@ -181,7 +181,8 @@ function buildDayPlan(
     }
   }
 
-  const bonus = input.capacityBonusByDay?.[toDateKey(dayStart)] ?? 0;
+  const freeMinutes = slots.length * SLOT_MINUTES;
+  const bonus = input.capacityBonusByDay?.[toDateKey(dayStart)] ?? preferences.focusBonusPerDayMinutes;
   const capacityMinutes = Math.max(
     0,
     Math.min(freeMinutes, preferences.maxDailyStudyMinutes + bonus),
@@ -241,7 +242,7 @@ function detectConflicts(
   }
 
   for (const task of tasks) {
-    if (task.completed) continue;
+    if (task.completed || taskRemainingMinutes(task) <= 0) continue;
     const deadline = parseISO(task.deadline);
     if (deadline.getTime() < now.getTime()) {
       conflicts.push({
@@ -307,87 +308,50 @@ export function buildSchedule(input: ScheduleInput): ScheduleResult {
   const blocks: RawBlock[] = [];
   const unscheduled: UnscheduledItem[] = [];
 
-  for (const task of eligible) {
-    const deadline = parseISO(task.deadline);
-    if (deadline.getTime() <= now.getTime()) {
-      unscheduled.push({
-        taskId: task.id,
-        title: task.title,
-        course: task.course,
-        priority: task.priority,
-        deadline: task.deadline,
-        minutesRemaining: taskRemainingMinutes(task),
-        reason: 'overdue',
-      });
-      continue;
-    }
-
-    let remaining = taskRemainingMinutes(task);
-
-    for (const plan of dayPlans) {
-      if (remaining <= 0) break;
-      if (plan.date.getTime() >= deadline.getTime()) break;
-
-      let block: RawBlock | null = null;
-
-      const flush = () => {
-        if (!block) return;
-        blocks.push(block);
-        if (block.minutes >= MAX_BLOCK_MINUTES) {
-          plan.breakUntil = addMinutes(block.end, Math.max(preferences.minBreakMinutes, SLOT_MINUTES));
-        }
-        block = null;
-      };
-
-      for (const slot of plan.slots) {
-        if (remaining <= 0) break;
-        if (slot.taken) continue;
-        if (slot.end.getTime() > deadline.getTime()) continue;
-        if (plan.plannedMinutes + SLOT_MINUTES > plan.capacityMinutes) continue;
-
-        const isContinuation =
-          block !== null &&
-          slot.start.getTime() === block.end.getTime() &&
-          block.minutes + SLOT_MINUTES <= MAX_BLOCK_MINUTES;
-
-        if (isContinuation && block) {
-          block.end = slot.end;
-          block.minutes += SLOT_MINUTES;
-        } else {
-          flush();
-          if (plan.breakUntil && slot.start.getTime() < plan.breakUntil.getTime()) continue;
-          block = {
-            taskId: task.id,
-            taskTitle: task.title,
-            course: task.course,
-            priority: task.priority,
-            start: slot.start,
-            end: slot.end,
-            minutes: SLOT_MINUTES,
-          };
-        }
-
-        slot.taken = true;
-        plan.plannedMinutes += SLOT_MINUTES;
-        remaining -= SLOT_MINUTES;
-
-        if (block && block.minutes >= MAX_BLOCK_MINUTES) flush();
+  const remainingById = new Map(eligible.map(task => [task.id, taskRemainingMinutes(task)]));
+  // Walk time once, so breaks span assignment boundaries as well as long tasks.
+  for (const plan of dayPlans) {
+    let block: RawBlock | null = null;
+    const flush = () => {
+      if (!block) return;
+      blocks.push(block);
+      plan.breakUntil = addMinutes(block.end, preferences.minBreakMinutes);
+      block = null;
+    };
+    for (const slot of plan.slots) {
+      if (plan.plannedMinutes + SLOT_MINUTES > plan.capacityMinutes) break;
+      const task = eligible.find(item =>
+        (remainingById.get(item.id) ?? 0) >= SLOT_MINUTES &&
+        parseISO(item.deadline) > now && slot.end <= parseISO(item.deadline),
+      );
+      if (!task) { flush(); continue; }
+      const continuation = block !== null && block.taskId === task.id &&
+        +block.end === +slot.start && block.minutes + SLOT_MINUTES <= MAX_BLOCK_MINUTES;
+      if (!continuation) {
+        flush();
+        if (plan.breakUntil && slot.start < plan.breakUntil) continue;
+        block = {
+          taskId: task.id, taskTitle: task.title, course: task.course, priority: task.priority,
+          start: slot.start, end: slot.end, minutes: SLOT_MINUTES,
+        };
+      } else if (block) {
+        block.end = slot.end;
+        block.minutes += SLOT_MINUTES;
       }
-
-      flush();
+      slot.taken = true;
+      plan.plannedMinutes += SLOT_MINUTES;
+      remainingById.set(task.id, (remainingById.get(task.id) ?? 0) - SLOT_MINUTES);
+      if (block && block.minutes >= MAX_BLOCK_MINUTES) flush();
     }
-
-    if (remaining > 0) {
-      unscheduled.push({
-        taskId: task.id,
-        title: task.title,
-        course: task.course,
-        priority: task.priority,
-        deadline: task.deadline,
-        minutesRemaining: remaining,
-        reason: 'insufficient-time',
-      });
-    }
+    flush();
+  }
+  for (const task of eligible) {
+    const remaining = remainingById.get(task.id) ?? 0;
+    if (remaining > 0) unscheduled.push({
+      taskId: task.id, title: task.title, course: task.course, priority: task.priority,
+      deadline: task.deadline, minutesRemaining: remaining,
+      reason: parseISO(task.deadline) <= now ? 'overdue' : 'insufficient-time',
+    });
   }
 
   const studyBlocks: StudyBlock[] = blocks
@@ -434,7 +398,7 @@ export function buildSchedule(input: ScheduleInput): ScheduleResult {
     conflicts,
     totals,
     infeasible: unscheduled.length > 0,
-    generatedAt: new Date().toISOString(),
+    generatedAt: now.toISOString(),
   };
 }
 

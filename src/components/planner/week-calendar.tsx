@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle } from 'lucide-react';
-import { parseISO } from 'date-fns';
+import { addDays, parseISO } from 'date-fns';
 import type {
   CommitmentCategory,
   CommitmentOccurrence,
@@ -85,7 +85,7 @@ export function WeekCalendar({
   const format = useFormatters();
 
   const days = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(weekStart.getTime() + index * 86400000);
+    const date = addDays(weekStart, index);
     return { date, key: toDateKey(date) };
   });
   const todayKey = toDateKey(new Date());

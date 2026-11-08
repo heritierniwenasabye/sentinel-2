@@ -1,5 +1,7 @@
 # SENTINEL 2.0 — Codex handoff
 
+> Follow-up: [INDEPENDENT_AUDIT.md](INDEPENDENT_AUDIT.md) records the current branch. A Playwright suite is now committed (`npm run test:e2e`, Node 20+); there are 85 Vitest tests. Scheduling, DST and recurring-edit fixes supersede the relevant historical notes below.
+
 This document is the entry point for the next engineering platform. It describes where the code
 lives, how it fits together, how to run it, and what should be done next. Read it together with
 [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`RELEASE_AUDIT.md`](RELEASE_AUDIT.md).
