@@ -304,3 +304,6 @@ src/
 - The four non-English locales have not had native-speaker review.
 - Settings provides raw corrupt-data backup downloads, validation and a confirmed merge recovery flow.
 - The full list is in [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md).
+
+Latest release-candidate evidence: [Final release verification](docs/FINAL_RELEASE_VERIFICATION.md)
+(150 unit/integration tests, 27 production Chromium tests; exact tested commit and limitations recorded).

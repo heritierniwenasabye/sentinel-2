@@ -1,6 +1,6 @@
 # SENTINEL 2.0 — Current supported boundaries
 
-Current acceptance evidence is in [HARDENING_ACCEPTANCE.md](HARDENING_ACCEPTANCE.md). Earlier audit
+Current acceptance evidence is in [FINAL_RELEASE_VERIFICATION.md](FINAL_RELEASE_VERIFICATION.md). Earlier audit
 reports describe earlier commits and must not be used as the current defect list.
 
 - Data is local to one browser profile and origin. There is no account, server backup, automatic sync,
