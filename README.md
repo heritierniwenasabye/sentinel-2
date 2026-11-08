@@ -12,8 +12,6 @@
 
 **InnovateMU 2026 · Wellness in Tech**
 
-**Viewing on a phone?** Tap any screenshot to open it at full size. Scroll down for the architecture and simulation diagrams, followed by their plain-language explanations.
-
 </div>
 
 ---
@@ -30,29 +28,15 @@ A conventional calendar shows **what is scheduled**. SENTINEL recalculates **wha
 
 **Live application:** https://sentinel-2-delta.vercel.app/
 
-### Product screenshots — mobile-friendly gallery
+### Screenshots
 
-These are actual captures of the fictional demo workspace. Each screenshot is displayed on its own line so visitors can tap to enlarge it on a phone.
+![Smart Planner](docs/screenshots/smart-planner.png)
 
-#### 1. Overview
+![Simulation Lab](docs/screenshots/simulation-lab.png)
 
-[![SENTINEL Overview: deadlines, planned study, and workload summary](docs/screenshots/overview.png)](docs/screenshots/overview.png)
+![Digital Habits](docs/screenshots/Digital-habits.png)
 
-#### 2. Smart Planner
-
-[![SENTINEL Smart Planner: generated study blocks and fixed commitments](docs/screenshots/smart-planner.png)](docs/screenshots/smart-planner.png)
-
-#### 3. Simulation Lab
-
-[![SENTINEL Simulation Lab: baseline and hypothetical plan comparison](docs/screenshots/simulation-lab.png)](docs/screenshots/simulation-lab.png)
-
-#### 4. Digital Habits
-
-[![SENTINEL Digital Habits: manually entered screen time and app goals](docs/screenshots/Digital-habits.png)](docs/screenshots/Digital-habits.png)
-
-#### 5. Wellness Insights
-
-[![SENTINEL Wellness Insights: workload-pressure indicators and rest insights](docs/screenshots/Wellness%20Insights.png)](docs/screenshots/Wellness%20Insights.png)
+![Wellness Insights](docs/screenshots/Wellness%20Insights.png)
 
 ### Three-minute demo path
 
