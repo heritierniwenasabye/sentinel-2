@@ -105,7 +105,8 @@ export function ComparisonChart({ baseline, simulated }: ComparisonChartProps) {
             </li>
             <li className="ml-auto text-2xs text-muted-foreground">{t('overview.workload.hoursAxis')}</li>
           </ul>
-          <table className="sr-only">
+          <div className="sr-only">
+          <table>
             <caption>{t('a11y.simulationChart')}</caption>
             <thead>
               <tr>
@@ -124,6 +125,7 @@ export function ComparisonChart({ baseline, simulated }: ComparisonChartProps) {
               ))}
             </tbody>
           </table>
+          </div>
         </>
       ) : (
         <div className="flex h-[180px] items-center justify-center">

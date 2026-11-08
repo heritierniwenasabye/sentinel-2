@@ -20,9 +20,9 @@ const TONE_CLASS: Record<NonNullable<StatCardProps['tone']>, string> = {
 
 export function StatCard({ label, value, hint, icon: Icon, tone = 'default', className }: StatCardProps) {
   return (
-    <div className={cn('rounded-lg border border-border bg-card p-4', className)}>
+    <div className={cn('min-w-0 rounded-lg border border-border bg-card p-4', className)}>
       <div className="flex items-start justify-between gap-2">
-        <p className="label-caps">{label}</p>
+        <p className="label-caps min-w-0 [overflow-wrap:anywhere]">{label}</p>
         {Icon ? (
           <Icon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.75} />
         ) : null}

@@ -65,7 +65,8 @@ export function UsageTrendChart({ summary }: { summary: HabitsSummary }) {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <table className="sr-only">
+          <div className="sr-only">
+          <table>
             <caption>{t('a11y.habitsTrendChart')}</caption>
             <tbody>
               {summary.last7Days.map((day) => (
@@ -76,6 +77,7 @@ export function UsageTrendChart({ summary }: { summary: HabitsSummary }) {
               ))}
             </tbody>
           </table>
+          </div>
         </>
       ) : (
         <EmptyState
