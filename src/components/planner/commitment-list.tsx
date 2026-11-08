@@ -95,7 +95,7 @@ export function CommitmentList({ commitments, onEdit, onDelete, onAdd }: Commitm
                         {commitment.isRecurring ? (
                           <span
                             title={t('recurrence.weekly')}
-                            aria-label={t('recurrence.weekly')}
+                            role="img" aria-label={t('recurrence.weekly')}
                             className="text-muted-foreground"
                           >
                             <Repeat aria-hidden="true" className="size-3" />
@@ -104,7 +104,7 @@ export function CommitmentList({ commitments, onEdit, onDelete, onAdd }: Commitm
                         {commitment.seriesId ? (
                           <span
                             title={t('recurrence.detached')}
-                            aria-label={t('recurrence.detached')}
+                            role="img" aria-label={t('recurrence.detached')}
                             className="text-2xs text-muted-foreground"
                           >
                             *

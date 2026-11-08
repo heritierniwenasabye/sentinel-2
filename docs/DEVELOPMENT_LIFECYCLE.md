@@ -99,3 +99,19 @@ stated in the README rather than implied otherwise.
 3. Optional encrypted file backup/restore.
 4. Study-session rescheduling with explicit conflict resolution.
 5. Accessibility audit with a screen reader, and a Playwright suite in CI.
+
+## Release hardening after independent review
+
+The owner withheld release approval and requested full student usability, recovery and stronger
+verification. The follow-up preserved the design and local architecture, added per-app manual usage
+goals and confirmed recovery, bounded imports, fixed short scheduling remainders and live clocks,
+removed repeated simulation recovery counting and upgraded the vulnerable routing/build/test stack.
+
+Tests grew from 85 to 136 unit/integration cases, including seeded scheduling invariants. Browser
+acceptance now includes the complete mobile student journey, actual exported-file restore, failures,
+keyboard controls and light/dark axe checks. Axe found real contrast and semantics defects that were
+fixed. Earlier selector failures and timestamp-format differences were investigated; neither was
+reported as a passing test. Local fonts and lazy routes reduced the production chunk sizes.
+
+See HARDENING_ACCEPTANCE.md for final observed results, unsupported/blocked checks, exact changes and
+release decision. No native-speaker, screen-reader or hosted-deployment verification is invented.

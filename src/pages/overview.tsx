@@ -1,3 +1,5 @@
+import { addDays } from 'date-fns';
+import { useClock } from '@/hooks/use-clock';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Sparkles } from 'lucide-react';
@@ -26,7 +28,7 @@ export function OverviewPage() {
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [confirmDemo, setConfirmDemo] = useState(false);
 
-  const today = new Date();
+  const today = useClock();
   const weekStart = useMemo(() => startOfWeekMonday(today), [today.getTime()]);
   const schedule = useWeekSchedule(weekStart);
   const analysis = useMemo(
@@ -35,7 +37,7 @@ export function OverviewPage() {
   );
 
   const todayKey = toDateKey(today);
-  const weekRange = `${format.date(weekStart, 'd MMM')} – ${format.date(new Date(weekStart.getTime() + 6 * 86400000), 'd MMM')}`;
+  const weekRange = `${format.date(weekStart, 'd MMM')} – ${format.date(addDays(weekStart, 6), 'd MMM')}`;
   const isEmpty = data.tasks.length === 0 && data.commitments.length === 0;
 
   return (

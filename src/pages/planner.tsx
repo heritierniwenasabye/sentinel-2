@@ -1,3 +1,4 @@
+import { useClock } from '@/hooks/use-clock';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { addDays, parseISO, startOfDay } from 'date-fns';
@@ -60,11 +61,12 @@ export function PlannerPage() {
 
   // New work defaults to the Sunday of the week being viewed, so it can be
   // scheduled immediately instead of landing in a week the student cannot see.
+  const currentDayKey = toDateKey(useClock());
   const defaultDeadlineDate = useMemo(() => {
     const sunday = startOfDay(addDays(weekStart, 6));
-    const today = startOfDay(new Date());
+    const today = startOfDay(parseISO(currentDayKey));
     return toDateKey(sunday.getTime() < today.getTime() ? today : sunday);
-  }, [weekStart]);
+  }, [weekStart, currentDayKey]);
 
   const weekTasks = useMemo(
     () =>

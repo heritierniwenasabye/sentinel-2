@@ -226,7 +226,7 @@ export function WeekCalendar({
                   ) : null}
 
                   {events.length === 0 ? (
-                    <span className="absolute inset-x-0 top-2 text-center text-2xs text-muted-foreground/70">
+                    <span className="absolute inset-x-0 top-2 text-center text-2xs text-muted-foreground">
                       {t('planner.free')}
                     </span>
                   ) : null}
@@ -258,7 +258,7 @@ export function WeekCalendar({
                       <>
                         <p className="truncate font-medium">{event.title}</p>
                         {height >= 34 ? (
-                          <p className="truncate tabular-nums opacity-70">{event.timeLabel}</p>
+                          <p className="truncate tabular-nums text-muted-foreground">{event.timeLabel}</p>
                         ) : null}
                       </>
                     );

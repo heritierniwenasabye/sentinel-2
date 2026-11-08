@@ -319,28 +319,31 @@ export function buildSchedule(input: ScheduleInput): ScheduleResult {
       block = null;
     };
     for (const slot of plan.slots) {
-      if (plan.plannedMinutes + SLOT_MINUTES > plan.capacityMinutes) break;
+      if (plan.plannedMinutes >= plan.capacityMinutes) break;
       const task = eligible.find(item =>
-        (remainingById.get(item.id) ?? 0) >= SLOT_MINUTES &&
-        parseISO(item.deadline) > now && slot.end <= parseISO(item.deadline),
+        (remainingById.get(item.id) ?? 0) > 0 &&
+        Math.min(SLOT_MINUTES, remainingById.get(item.id) ?? 0) <= plan.capacityMinutes - plan.plannedMinutes &&
+        parseISO(item.deadline) > now && addMinutes(slot.start, Math.min(SLOT_MINUTES, remainingById.get(item.id) ?? 0)) <= parseISO(item.deadline),
       );
       if (!task) { flush(); continue; }
+      const minutes = Math.min(SLOT_MINUTES, remainingById.get(task.id) ?? 0);
+      const end = addMinutes(slot.start, minutes);
       const continuation = block !== null && block.taskId === task.id &&
-        +block.end === +slot.start && block.minutes + SLOT_MINUTES <= MAX_BLOCK_MINUTES;
+        +block.end === +slot.start && block.minutes + minutes <= MAX_BLOCK_MINUTES;
       if (!continuation) {
         flush();
         if (plan.breakUntil && slot.start < plan.breakUntil) continue;
         block = {
           taskId: task.id, taskTitle: task.title, course: task.course, priority: task.priority,
-          start: slot.start, end: slot.end, minutes: SLOT_MINUTES,
+          start: slot.start, end, minutes,
         };
       } else if (block) {
-        block.end = slot.end;
-        block.minutes += SLOT_MINUTES;
+        block.end = end;
+        block.minutes += minutes;
       }
       slot.taken = true;
-      plan.plannedMinutes += SLOT_MINUTES;
-      remainingById.set(task.id, (remainingById.get(task.id) ?? 0) - SLOT_MINUTES);
+      plan.plannedMinutes += minutes;
+      remainingById.set(task.id, (remainingById.get(task.id) ?? 0) - minutes);
       if (block && block.minutes >= MAX_BLOCK_MINUTES) flush();
     }
     flush();

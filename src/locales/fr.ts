@@ -1,6 +1,48 @@
 import type { Translation } from '@/locales/en';
 
 const fr: Translation = {
+  goals: {
+    "title": "Objectifs d’utilisation",
+    "description": "Limites quotidiennes calculées à partir de vos saisies manuelles. Sans saisie, l’utilisation est inconnue, pas nulle.",
+    "add": "Ajouter un objectif",
+    "edit": "Modifier l’objectif",
+    "empty": "Aucun objectif pour le moment.",
+    "app": "Application",
+    "limit": "Limite quotidienne (minutes)",
+    "limitValue": "Limite quotidienne : {{minutes}} min",
+    "missing": "Aucune saisie aujourd’hui. Utilisation inconnue.",
+    "over": "{{used}} enregistrées aujourd’hui ; {{remaining}} au-dessus de la limite.",
+    "progress": "{{used}} enregistrées aujourd’hui ; {{remaining}} sous la limite.",
+    "invalid": "Choisissez une application sans objectif existant et une limite entière de 1 à 1440 minutes.",
+    "deleteTitle": "Supprimer l’objectif ?",
+    "deleteBody": "Supprimer l’objectif de {{app}} ? Les saisies sont conservées."
+},
+  recovery: {
+    previous: "Télécharger la sauvegarde brute précédente",
+    reload: "Recharger la page",
+    "title": "Récupération des données",
+    "body": "Des données endommagées ont été préservées. Téléchargez d’abord la sauvegarde brute. La validation ne modifie rien. La restauration fusionne les éléments valides et conserve les données actuelles et la sauvegarde.",
+    "download": "Télécharger la sauvegarde brute",
+    "validate": "Valider la sauvegarde",
+    "invalid": "Cette sauvegarde ne peut pas être restaurée en JSON SENTINEL. Conservez le fichier pour une récupération manuelle.",
+    "restore": "Restaurer les éléments valides",
+    "confirmTitle": "Restaurer les éléments récupérés ?",
+    "confirmBody": "Les éléments valides seront fusionnés. Les identifiants existants sont prioritaires. Les éléments invalides sont signalés et ignorés. La sauvegarde brute est conservée.",
+    "limits": "Fichiers : 5 Mio et 10 000 éléments maximum.",
+    "readError": "Impossible de lire le fichier. Sélectionnez-le à nouveau.",
+    "found": "Une sauvegarde de récupération est disponible dans les paramètres.",
+    "loading": "Chargement de la page…"
+},
+  importErrors: {
+    "duplicate": "Élément en double ignoré.",
+    "date": "Date ou heure invalide. Vérifiez le jour et l’ordre du début et de la fin.",
+    "duration": "Durée ou progression invalide. Vérifiez les limites en minutes.",
+    "id": "Identifiant manquant ou invalide.",
+    "relationship": "La référence à un cours inconnu a été supprimée.",
+    "format": "Format, colonnes ou champs entre guillemets invalides.",
+    "version": "Ces données nécessitent une version plus récente de SENTINEL.",
+    "record": "Élément ou champ obligatoire invalide. Vérifiez le fichier avant de l’importer."
+},
   app: {
     name: 'SENTINEL',
     version: '2.0',

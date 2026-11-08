@@ -25,8 +25,8 @@ function MetricRow({ label, value, emphasized }: MetricRowProps) {
         emphasized && 'font-medium',
       )}
     >
-      <span className="text-muted-foreground">{label}</span>
-      <span className="tabular-nums text-foreground">{value}</span>
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="tabular-nums text-foreground">{value}</dd>
     </div>
   );
 }

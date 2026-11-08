@@ -1,4 +1,5 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from './fixtures';
+import type { Page } from '@playwright/test';
 const data = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem('sentinel.v2.data')!).data);
 const dialog = (page: Page) => page.getByRole('dialog');
 async function choose(page: Page, id: string, name: string | RegExp) {

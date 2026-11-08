@@ -5,7 +5,9 @@ import { combineDayAndTime, minutesToTime, toDateKey, toLocalIso } from '@/lib/d
 const DATE_KEY = /^\d{4}-\d{2}-\d{2}$/;
 
 export function isDateKey(value: unknown): value is string {
-  return typeof value === 'string' && DATE_KEY.test(value);
+  if (typeof value !== 'string' || !DATE_KEY.test(value)) return false;
+  const parsed = parseISO(value);
+  return isValid(parsed) && toDateKey(parsed) === value;
 }
 
 /** Keeps only whole weekday numbers 0–6, de-duplicated and sorted. */

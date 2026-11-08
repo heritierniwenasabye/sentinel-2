@@ -1,5 +1,8 @@
 # SENTINEL 2.0 — Release candidate audit
 
+> Historical evidence. The current release-hardening results are in [HARDENING_ACCEPTANCE.md](HARDENING_ACCEPTANCE.md).
+
+
 > Historical report from the starting commit. See [INDEPENDENT_AUDIT.md](INDEPENDENT_AUDIT.md) for the independent follow-up, reproduced defects, fixes and current results.
 
 Date: 8 November 2026 · Scope: final independent QA/release pass before GitHub transfer.

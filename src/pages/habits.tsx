@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/common/page-header';
 import { StatCard } from '@/components/common/stat-card';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { UsageGoals } from '@/components/habits/usage-goals';
 import { UsageDialog } from '@/components/habits/usage-dialog';
 import { UsageTable } from '@/components/habits/usage-table';
 import { UsageByAppChart, UsageCategoryChart, UsageTrendChart } from '@/components/habits/usage-charts';
 import { HabitSimulator } from '@/components/habits/habit-simulator';
+import { useClock } from '@/hooks/use-clock';
 import { useApp } from '@/hooks/use-app';
 import { useToast } from '@/components/ui/toast';
 import { useFormatters } from '@/hooks/use-formatters';
@@ -20,7 +22,8 @@ export function HabitsPage() {
   const format = useFormatters();
   const { usage, deleteUsage } = useApp();
   const { notify } = useToast();
-  const summary = useMemo(() => summarizeUsage(usage), [usage]);
+  const now = useClock();
+  const summary = useMemo(() => summarizeUsage(usage, now), [usage, now]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<DigitalUsageEntry | null>(null);
@@ -93,6 +96,8 @@ export function HabitsPage() {
         </div>
         <UsageByAppChart summary={summary} />
       </div>
+
+      <UsageGoals />
 
       <HabitSimulator summary={summary} />
 

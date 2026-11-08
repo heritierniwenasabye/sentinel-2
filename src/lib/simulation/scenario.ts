@@ -56,7 +56,7 @@ export function applyScenario(
         if (typeof op.patch.estimatedMinutes === 'number' && Number.isFinite(op.patch.estimatedMinutes)) {
           patch.estimatedMinutes = Math.max(0, Math.round(op.patch.estimatedMinutes));
         }
-        tasks = tasks.map((task) => (task.id === op.taskId ? { ...task, ...patch } : task));
+        tasks = tasks.map((task) => (task.id === op.taskId ? { ...task, ...patch, completedMinutes: Math.min(task.completedMinutes ?? 0, patch.estimatedMinutes ?? task.estimatedMinutes) } : task));
         break;
       }
       case 'study-window': {
@@ -69,7 +69,9 @@ export function applyScenario(
           Math.max(0, Math.round(op.weeklyReductionMinutes)),
           summary.recentDiscretionaryMinutes,
         );
-        recoveredMinutes += recovered;
+        recoveredMinutes = recovered;
+        capacityBonusByDay = {};
+        preferences = { ...preferences, focusBonusPerDayMinutes: data.preferences.focusBonusPerDayMinutes };
         screenTimeApplied = true;
         if (op.allocateToSchedule) {
           const perDay = Math.floor(recovered / 7 / 30) * 30;
@@ -112,9 +114,8 @@ export function commitScenario(
 ): AppData {
   const applied = applyScenario(data, ops, weekStart, now);
   const perDay = Math.max(0, ...Object.values(applied.capacityBonusByDay));
-  const screenTimeAllocated = ops.some(
-    (op) => op.type === 'screen-time' && op.allocateToSchedule,
-  );
+  const lastReduction = [...ops].reverse().find(op => op.type === 'screen-time');
+  const screenTimeAllocated = lastReduction?.type === 'screen-time' && lastReduction.allocateToSchedule;
 
   return {
     ...applied.data,

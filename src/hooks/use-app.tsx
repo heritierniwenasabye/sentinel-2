@@ -6,10 +6,11 @@ import type {
   DigitalUsageEntry,
   Task,
   UserPreferences,
+  UsageGoal,
 } from '@/types';
-import { createEmptyData, exportAppData, loadAppData, saveAppData } from '@/lib/storage/storage';
+import { createEmptyData, exportAppData, loadAppData, readRecoveryBackup, saveAppData } from '@/lib/storage/storage';
 import { createDemoData } from '@/lib/storage/demo';
-import { DEFAULT_PREFERENCES } from '@/lib/preferences';
+import { DEFAULT_PREFERENCES, normalizePreferences } from '@/lib/preferences';
 import i18n from '@/lib/i18n';
 
 export type CourseDeleteMode = 'unlink' | 'delete-tasks';
@@ -20,6 +21,9 @@ interface AppContextValue {
   tasks: Task[];
   commitments: Commitment[];
   usage: DigitalUsageEntry[];
+  usageGoals: UsageGoal[];
+  saveUsageGoal: (goal: UsageGoal) => void;
+  deleteUsageGoal: (id: string) => void;
   preferences: UserPreferences;
   storageAvailable: boolean;
   isDark: boolean;
@@ -54,7 +58,14 @@ function systemPrefersDark(): boolean {
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<AppData>(() => loadAppData() ?? createEmptyData());
+  const [data, setData] = useState<AppData>(() => {
+    const loaded = loadAppData();
+    if (loaded) return loaded;
+    const empty = createEmptyData();
+    // Recovery takes priority over a new-user wizard after damaged storage.
+    if (readRecoveryBackup() !== null) empty.preferences.onboardingCompleted = true;
+    return empty;
+  });
   const [storageAvailable, setStorageAvailable] = useState(true);
   const [systemDark, setSystemDark] = useState<boolean>(() => systemPrefersDark());
 
@@ -196,10 +207,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setData((current) => ({ ...current, usage: current.usage.filter((entry) => entry.id !== id) }));
   }, []);
 
+  const saveUsageGoal = useCallback((goal: UsageGoal) => {
+    setData(current => ({ ...current, usageGoals: [...(current.usageGoals ?? []).filter(item => item.id !== goal.id), goal] }));
+  }, []);
+  const deleteUsageGoal = useCallback((id: string) => {
+    setData(current => ({ ...current, usageGoals: (current.usageGoals ?? []).filter(item => item.id !== id) }));
+  }, []);
+
   const updatePreferences = useCallback((patch: Partial<UserPreferences>) => {
     setData((current) => ({
       ...current,
-      preferences: { ...current.preferences, ...patch },
+      preferences: normalizePreferences({ ...current.preferences, ...patch }),
     }));
   }, []);
 
@@ -242,6 +260,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       tasks: data.tasks,
       commitments: data.commitments,
       usage: data.usage,
+      usageGoals: data.usageGoals ?? [],
+      saveUsageGoal, deleteUsageGoal,
       preferences: data.preferences,
       storageAvailable,
       isDark,
@@ -268,7 +288,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       buildExport,
     }),
     [
-      data,
+      data, saveUsageGoal, deleteUsageGoal,
       storageAvailable,
       isDark,
       addCourse,

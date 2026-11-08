@@ -10,6 +10,7 @@ import { PendingChanges } from '@/components/simulation/pending-changes';
 import { ComparisonPanel } from '@/components/simulation/comparison-panel';
 import { ComparisonChart } from '@/components/simulation/comparison-chart';
 import { Explanations } from '@/components/simulation/explanations';
+import { useClock } from '@/hooks/use-clock';
 import { useApp } from '@/hooks/use-app';
 import { useToast } from '@/components/ui/toast';
 import { compareScenario } from '@/lib/simulation/engine';
@@ -27,10 +28,12 @@ export function SimulationPage() {
   const [ops, setOps] = useState<ScenarioOp[]>([]);
   const [applyOpen, setApplyOpen] = useState(false);
 
-  const weekStart = useMemo(() => startOfWeekMonday(new Date()), []);
+  const now = useClock();
+  const weekKey = startOfWeekMonday(now).getTime();
+  const weekStart = useMemo(() => new Date(weekKey), [weekKey]);
   const comparison = useMemo(
-    () => compareScenario(data, { weekStart, ops }),
-    [data, weekStart, ops],
+    () => compareScenario(data, { weekStart, ops, now }),
+    [data, weekStart, ops, now],
   );
 
   const baselineAnalysis = useMemo(

@@ -1,3 +1,4 @@
+import { radioKeyboard } from '@/lib/radio-keyboard';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -20,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/field';
 import { Label, FieldError } from '@/components/ui/label';
+import { isValidTime } from '@/lib/date';
 import { useApp } from '@/hooks/use-app';
 import { useToast } from '@/components/ui/toast';
 import { useFormatters } from '@/hooks/use-formatters';
@@ -72,7 +74,7 @@ export function SettingsPage() {
 
   const handleSave = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (form.studyEnd <= form.studyStart) {
+    if (!isValidTime(form.studyStart) || !isValidTime(form.studyEnd) || !isValidTime(form.sleepStart) || !isValidTime(form.sleepEnd) || form.studyEnd <= form.studyStart) {
       setError(t('settings.planning.errorWindow'));
       return;
     }
@@ -83,9 +85,9 @@ export function SettingsPage() {
       !Number.isFinite(maxDaily) ||
       !Number.isFinite(minBreak) ||
       !Number.isFinite(focusBonus) ||
-      maxDaily < 30 ||
-      minBreak < 5 ||
-      focusBonus < 0
+      maxDaily < 30 || maxDaily > 960 || !Number.isInteger(maxDaily) ||
+      minBreak < 5 || minBreak > 120 || !Number.isInteger(minBreak) ||
+      focusBonus < 0 || focusBonus > 240 || !Number.isInteger(focusBonus)
     ) {
       setError(t('settings.planning.errorNumbers'));
       return;
@@ -221,7 +223,7 @@ export function SettingsPage() {
             subtitle={t('settings.appearance.subtitle')}
             action={<Palette aria-hidden="true" className="size-4 text-muted-foreground" />}
           >
-            <div role="radiogroup" aria-label={t('settings.appearance.title')} className="grid gap-2 sm:grid-cols-3">
+            <div role="radiogroup" onKeyDown={radioKeyboard} aria-label={t('settings.appearance.title')} className="grid gap-2 sm:grid-cols-3">
               {THEME_OPTIONS.map((option) => {
                 const Icon = option.icon;
                 const active = preferences.theme === option.value;
@@ -256,7 +258,7 @@ export function SettingsPage() {
             subtitle={t('settings.language.subtitle')}
             action={<Globe2 aria-hidden="true" className="size-4 text-muted-foreground" />}
           >
-            <div role="radiogroup" aria-label={t('settings.language.title')} className="flex flex-col gap-1">
+            <div role="radiogroup" onKeyDown={radioKeyboard} aria-label={t('settings.language.title')} className="flex flex-col gap-1">
               {SUPPORTED_LANGUAGES.map((language) => {
                 const active = preferences.language === language.code;
                 return (

@@ -3,6 +3,48 @@
  * Other locales are typed against `Translation`, so a missing key fails the build.
  */
 const en = {
+  goals: {
+    "title": "Usage goals",
+    "description": "Daily limits based only on your manual entries. No entry means unknown usage, not zero.",
+    "add": "Add usage goal",
+    "edit": "Edit usage goal",
+    "empty": "No usage goals yet.",
+    "app": "Application",
+    "limit": "Daily limit (minutes)",
+    "limitValue": "Daily limit: {{minutes}} min",
+    "missing": "No entry for today. Usage is unknown.",
+    "over": "{{used}} recorded today; {{remaining}} over the limit.",
+    "progress": "{{used}} recorded today; {{remaining}} below the limit.",
+    "invalid": "Enter an app with no existing goal and a whole-minute limit from 1 to 1440.",
+    "deleteTitle": "Delete usage goal?",
+    "deleteBody": "Remove the goal for {{app}}? Logged usage is kept."
+},
+  recovery: {
+    previous: "Download previous raw backup",
+    reload: "Reload page",
+    "title": "Data recovery",
+    "body": "A damaged payload was preserved. Download the raw backup first. Validation never changes your workspace. Restoring merges valid records; your current records and the raw backup are kept.",
+    "download": "Download raw backup",
+    "validate": "Validate backup",
+    "invalid": "The backup cannot be restored as SENTINEL JSON. Keep the downloaded file for manual recovery.",
+    "restore": "Restore valid records",
+    "confirmTitle": "Restore recovered records?",
+    "confirmBody": "Valid records will be merged with this workspace. Existing IDs win. Invalid records are listed and skipped. The raw backup is retained.",
+    "limits": "Uploads: at most 5 MiB and 10,000 records.",
+    "readError": "The file could not be read. Try selecting it again.",
+    "found": "A recovery backup is available in Settings.",
+    "loading": "Loading page…"
+},
+  importErrors: {
+    "duplicate": "Duplicate record skipped.",
+    "date": "Invalid date or time. Check the calendar date and start/end order.",
+    "duration": "Invalid duration or progress. Check the allowed minute range.",
+    "id": "Missing or invalid record identifier.",
+    "relationship": "Unknown course reference was unlinked.",
+    "format": "Invalid file format, columns or quoted fields.",
+    "version": "This data requires a newer version of SENTINEL.",
+    "record": "Invalid record or required field. Review the file before importing."
+},
   app: {
     name: 'SENTINEL',
     version: '2.0',

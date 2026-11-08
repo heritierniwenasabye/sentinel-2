@@ -1,6 +1,48 @@
 import type { Translation } from '@/locales/en';
 
 const zhCN: Translation = {
+  goals: {
+    "title": "使用目标",
+    "description": "每日上限仅根据手动记录计算。没有记录表示使用情况未知，而非零。",
+    "add": "添加使用目标",
+    "edit": "编辑使用目标",
+    "empty": "暂无使用目标。",
+    "app": "应用",
+    "limit": "每日上限（分钟）",
+    "limitValue": "每日上限：{{minutes}} 分钟",
+    "missing": "今天暂无记录。使用情况未知。",
+    "over": "今天已记录 {{used}}；超出上限 {{remaining}}。",
+    "progress": "今天已记录 {{used}}；低于上限 {{remaining}}。",
+    "invalid": "请输入尚无目标的应用名称，并设置 1 到 1440 的整数分钟上限。",
+    "deleteTitle": "删除使用目标？",
+    "deleteBody": "删除 {{app}} 的目标？使用记录将保留。"
+},
+  recovery: {
+    previous: "下载先前的原始备份",
+    reload: "重新加载页面",
+    "title": "数据恢复",
+    "body": "已保留受损数据。请先下载原始备份。验证不会改变当前数据。恢复会合并有效记录，并保留当前数据及原始备份。",
+    "download": "下载原始备份",
+    "validate": "验证备份",
+    "invalid": "无法将此备份恢复为 SENTINEL JSON。请保留下载的文件以便手动恢复。",
+    "restore": "恢复有效记录",
+    "confirmTitle": "恢复找回的记录？",
+    "confirmBody": "有效记录将合并到当前工作区。现有标识符优先。无效记录将列出并跳过。原始备份将保留。",
+    "limits": "上传限制：5 MiB，10,000 条记录。",
+    "readError": "无法读取文件。请重新选择。",
+    "found": "设置中有可恢复的备份。",
+    "loading": "正在加载页面…"
+},
+  importErrors: {
+    "duplicate": "已跳过重复记录。",
+    "date": "日期或时间无效。请检查日期以及开始和结束顺序。",
+    "duration": "时长或进度无效。请检查分钟数范围。",
+    "id": "记录标识符缺失或无效。",
+    "relationship": "已解除对未知课程的关联。",
+    "format": "文件格式、列或引号字段无效。",
+    "version": "此数据需要更新版本的 SENTINEL。",
+    "record": "记录或必填字段无效。导入前请检查文件。"
+},
   app: {
     name: 'SENTINEL',
     version: '2.0',

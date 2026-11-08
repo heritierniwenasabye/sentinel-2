@@ -1,6 +1,48 @@
 import type { Translation } from '@/locales/en';
 
 const pt: Translation = {
+  goals: {
+    "title": "Metas de uso",
+    "description": "Limites diários baseados apenas nos registros manuais. Sem registro, o uso é desconhecido, não zero.",
+    "add": "Adicionar meta de uso",
+    "edit": "Editar meta de uso",
+    "empty": "Ainda não há metas de uso.",
+    "app": "Aplicativo",
+    "limit": "Limite diário (minutos)",
+    "limitValue": "Limite diário: {{minutes}} min",
+    "missing": "Nenhum registro hoje. Uso desconhecido.",
+    "over": "{{used}} registradas hoje; {{remaining}} acima do limite.",
+    "progress": "{{used}} registradas hoje; {{remaining}} abaixo do limite.",
+    "invalid": "Informe um aplicativo sem meta existente e um limite inteiro de 1 a 1440 minutos.",
+    "deleteTitle": "Excluir meta de uso?",
+    "deleteBody": "Excluir a meta de {{app}}? Os registros serão mantidos."
+},
+  recovery: {
+    previous: "Baixar backup original anterior",
+    reload: "Recarregar página",
+    "title": "Recuperação de dados",
+    "body": "Os dados danificados foram preservados. Baixe primeiro o backup original. A validação não altera nada. A restauração mescla os registros válidos e mantém os dados atuais e o backup.",
+    "download": "Baixar backup original",
+    "validate": "Validar backup",
+    "invalid": "O backup não pode ser restaurado como JSON do SENTINEL. Guarde o arquivo para recuperação manual.",
+    "restore": "Restaurar registros válidos",
+    "confirmTitle": "Restaurar os registros recuperados?",
+    "confirmBody": "Os registros válidos serão mesclados. IDs existentes têm prioridade. Registros inválidos são exibidos e ignorados. O backup original é mantido.",
+    "limits": "Arquivos: máximo de 5 MiB e 10.000 registros.",
+    "readError": "Não foi possível ler o arquivo. Selecione-o novamente.",
+    "found": "Há um backup de recuperação nas Configurações.",
+    "loading": "Carregando página…"
+},
+  importErrors: {
+    "duplicate": "Registro duplicado ignorado.",
+    "date": "Data ou hora inválida. Confira o dia e a ordem de início e fim.",
+    "duration": "Duração ou progresso inválido. Confira os limites em minutos.",
+    "id": "Identificador ausente ou inválido.",
+    "relationship": "A referência a um curso desconhecido foi desvinculada.",
+    "format": "Formato, colunas ou campos entre aspas inválidos.",
+    "version": "Estes dados exigem uma versão mais recente do SENTINEL.",
+    "record": "Registro ou campo obrigatório inválido. Revise o arquivo antes de importar."
+},
   app: {
     name: 'SENTINEL',
     version: '2.0',

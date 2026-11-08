@@ -251,6 +251,7 @@ export function CommitmentDialog({
               </Label>
               <Input
                 id="commitment-title"
+              maxLength={200}
                 value={form.title}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, title: event.target.value }))
@@ -427,6 +428,7 @@ export function CommitmentDialog({
             <Label htmlFor="commitment-notes">{t('planner.commitmentDialog.notesLabel')}</Label>
             <Textarea
               id="commitment-notes"
+              maxLength={1000}
               value={form.notes}
               onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))}
               placeholder={t('planner.commitmentDialog.notesPlaceholder')}

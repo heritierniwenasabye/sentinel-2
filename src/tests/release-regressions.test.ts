@@ -50,11 +50,12 @@ describe('independent release regressions', () => {
     expect(buildSchedule(base).days[0].capacityMinutes).toBe(90);
     expect(buildSchedule({ ...base, capacityBonusByDay: { '2026-11-02': 60 } }).days[0].capacityMinutes).toBe(120);
   });
-  it('reports sub-slot work as unfinished and excludes work beyond the horizon', () => {
+  it('schedules a short final block and excludes work beyond the horizon', () => {
     const result = buildSchedule({ ...input, tasks: [task('small', 15), { ...task('later'), deadline: '2026-12-01T23:59:00' }] });
     expect(result.totals.demandMinutes).toBe(15);
-    expect(result.totals.plannedMinutes).toBe(0);
-    expect(result.unscheduled[0].minutesRemaining).toBe(15);
+    expect(result.totals.plannedMinutes).toBe(15);
+    expect(result.blocks[0].minutes).toBe(15);
+    expect(result.unscheduled).toEqual([]);
   });
   it('requires a configured break after every block and protects sleep and commitments', () => {
     const result = buildSchedule({ ...input, tasks: [task('long', 600)],

@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { useFormatters } from '@/hooks/use-formatters';
 import { createId } from '@/lib/utils';
 import { expandCommitments } from '@/lib/recurrence';
-import { toLocalIso } from '@/lib/date';
+import { isValidTime, toLocalIso } from '@/lib/date';
 
 type ScenarioType =
   | 'addShift'
@@ -129,7 +129,7 @@ export function ScenarioBuilder({
     }
     if (taskDuration) {
       const minutes = Number(taskDuration);
-      if (!Number.isFinite(minutes) || minutes < 0) {
+      if (!Number.isFinite(minutes) || minutes < 30 || minutes > 2400) {
         return setError(t('planner.taskDialog.errorDuration'));
       }
       patch.estimatedMinutes = Math.round(minutes);
@@ -166,7 +166,7 @@ export function ScenarioBuilder({
 
   const submitWindow = (event: FormEvent) => {
     event.preventDefault();
-    if (window.end <= window.start) return setError(t('simulation.forms.errorWindow'));
+    if (!isValidTime(window.start) || !isValidTime(window.end) || window.end <= window.start) return setError(t('simulation.forms.errorWindow'));
     onAdd({ type: 'study-window', start: window.start, end: window.end });
     reset();
   };
@@ -216,6 +216,7 @@ export function ScenarioBuilder({
               <Label htmlFor="shift-title">{t('simulation.forms.shiftTitle')}</Label>
               <Input
                 id="shift-title"
+              maxLength={200}
                 value={shift.title}
                 onChange={(event) => setShift((current) => ({ ...current, title: event.target.value }))}
                 placeholder={t('simulation.forms.shiftTitlePlaceholder')}
@@ -317,7 +318,8 @@ export function ScenarioBuilder({
                 <Input
                   id="change-duration"
                   type="number"
-                  min={0}
+                  min={30}
+                  max={2400}
                   step={30}
                   value={taskDuration}
                   onChange={(event) => setTaskDuration(event.target.value)}
@@ -339,6 +341,7 @@ export function ScenarioBuilder({
               <Label htmlFor="rest-title">{t('simulation.forms.restTitle')}</Label>
               <Input
                 id="rest-title"
+              maxLength={200}
                 value={rest.title}
                 onChange={(event) => setRest((current) => ({ ...current, title: event.target.value }))}
                 placeholder={t('simulation.forms.restTitlePlaceholder')}

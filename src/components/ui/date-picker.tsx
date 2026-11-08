@@ -243,7 +243,7 @@ export function DatePicker({ id, value, onChange, invalid, describedBy, classNam
                   aria-label={format.date(`${key}T12:00:00`, 'EEEE d MMMM yyyy')}
                   className={cn(
                     'h-8 rounded-sm text-xs tabular-nums transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
-                    outside ? 'text-muted-foreground/50' : 'text-foreground',
+                    outside ? 'text-muted-foreground' : 'text-foreground',
                     isSelected ? 'bg-primary text-background' : 'hover:bg-muted',
                     !isSelected && key === todayKey && 'border border-primary/40',
                   )}

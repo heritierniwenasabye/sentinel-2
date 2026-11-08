@@ -1,5 +1,8 @@
 # Independent engineering audit
 
+> Historical evidence. The current release-hardening results are in [HARDENING_ACCEPTANCE.md](HARDENING_ACCEPTANCE.md).
+
+
 Audit performed 7 November 2026 (America/Chicago; executor logs use 8 November UTC).
 Baseline: `98d72ca445903ba447adc35b4e8b09b560b20ba7`.
 Branch: `audit/independent-release-review`. Existing design and architecture retained.

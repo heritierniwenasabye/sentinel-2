@@ -1,3 +1,5 @@
+import { importDiagnostic } from '@/lib/io/diagnostic';
+import { radioKeyboard } from '@/lib/radio-keyboard';
 import { useMemo, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Download, FileSpreadsheet, FileUp, Upload } from 'lucide-react';
@@ -11,6 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { MAX_IMPORT_BYTES } from '@/lib/io/limits';
+import { DataRecovery } from '@/components/settings/data-recovery';
 import { useApp } from '@/hooks/use-app';
 import { useToast } from '@/components/ui/toast';
 import {
@@ -88,15 +92,17 @@ export function DataManager() {
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > MAX_IMPORT_BYTES) {
       notify({ title: t('settings.data.sizeError'), tone: 'error' });
       return;
     }
-    const result = parseImport(await file.text());
+    let text: string;
+    try { text = await file.text(); } catch { notify({ title: t('recovery.readError'), tone: 'error' }); return; }
+    const result = parseImport(text);
     if (!result.data) {
       notify({
         title: t('settings.data.invalidFile'),
-        description: result.errors[0],
+        description: importDiagnostic(result.errors[0] ?? '', t),
         tone: 'error',
       });
       return;
@@ -156,19 +162,30 @@ export function DataManager() {
     document.getElementById(`csv-import-${kind}`)?.click();
   };
 
+  const skipDuplicates = <T,>(items: T[], existing: T[], key: (item: T) => string, errors: string[]) => {
+    const seen = new Set(existing.map(key));
+    return items.filter(item => {
+      const value = key(item);
+      if (seen.has(value)) { errors.push('Duplicate record skipped.'); return false; }
+      seen.add(value); return true;
+    });
+  };
+
   const handleCsvFile = async (kind: CsvEntity, event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
-    const text = await file.text();
+    if (file.size > MAX_IMPORT_BYTES) { notify({ title: t('settings.data.sizeError'), tone: 'error' }); return; }
+    let text: string;
+    try { text = await file.text(); } catch { notify({ title: t('recovery.readError'), tone: 'error' }); return; }
     if (!text.trim()) {
       notify({ title: t('settings.data.csv.emptyFile'), tone: 'error' });
       return;
     }
     try {
       parseCsv(text);
-    } catch {
-      notify({ title: t('settings.data.csv.unknownFile'), tone: 'error' });
+    } catch (error) {
+      notify({ title: t('settings.data.csv.unknownFile'), description: importDiagnostic((error as Error).message, t), tone: 'error' });
       return;
     }
 
@@ -182,6 +199,7 @@ export function DataManager() {
       });
     } else if (kind === 'tasks') {
       const result = tasksFromCsv(text, data.courses);
+      result.items = skipDuplicates(result.items, data.tasks, item => JSON.stringify([item.title.trim().toLowerCase(), item.courseId ?? '', item.deadline]), result.errors);
       setCsvPending({
         kind,
         tasks: result.items,
@@ -190,6 +208,7 @@ export function DataManager() {
       });
     } else {
       const result = commitmentsFromCsv(text);
+      result.items = skipDuplicates(result.items, data.commitments, item => JSON.stringify([item.title.trim().toLowerCase(), item.start, item.end]), result.errors);
       setCsvPending({
         kind,
         commitments: result.items,
@@ -224,6 +243,8 @@ export function DataManager() {
 
   return (
     <div className="flex flex-col gap-3 sm:col-span-2">
+      <DataRecovery />
+      <p className="text-xs text-muted-foreground">{t('recovery.limits')}</p>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-md border border-border p-3">
           <p className="text-xs font-medium text-foreground">{t('settings.data.export')}</p>
@@ -334,11 +355,11 @@ export function DataManager() {
                 commitments: jsonPreview?.counts.commitments ?? 0,
                 usage: jsonPreview?.counts.usage ?? 0,
                 skipped: jsonPreview?.merge.summary.skipped ?? 0,
-              })}
+              })}{' · '}{t('goals.title')}: {jsonPending?.data.usageGoals?.length ?? 0}
             </DialogDescription>
           </DialogHeader>
 
-          <div role="radiogroup" aria-label={t('settings.data.previewTitle')} className="flex flex-col gap-2">
+          <div role="radiogroup" onKeyDown={radioKeyboard} aria-label={t('settings.data.previewTitle')} className="flex flex-col gap-2">
             {(['merge', 'replace'] as ImportMode[]).map((mode) => (
               <button
                 key={mode}
@@ -372,7 +393,7 @@ export function DataManager() {
           {jsonPending && jsonPending.errors.length > 0 ? (
             <ul className="max-h-32 overflow-y-auto rounded-md border border-warning/30 bg-warning/5 p-2 text-2xs text-warning">
               {jsonPending.errors.slice(0, 8).map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item}>{importDiagnostic(item, t)}</li>
               ))}
             </ul>
           ) : null}
@@ -421,7 +442,7 @@ export function DataManager() {
               </p>
               <ul className="max-h-40 overflow-y-auto rounded-md border border-warning/30 bg-warning/5 p-2 text-2xs text-warning">
                 {csvPending.errors.slice(0, 12).map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item}>{importDiagnostic(item, t)}</li>
                 ))}
               </ul>
             </div>

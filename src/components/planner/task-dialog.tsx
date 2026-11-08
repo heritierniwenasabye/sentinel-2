@@ -182,6 +182,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultDate }: TaskDialog
             </Label>
             <Input
               id="task-title"
+              maxLength={200}
               value={form.title}
               onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
               placeholder={t('planner.taskDialog.titlePlaceholder')}
@@ -298,6 +299,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultDate }: TaskDialog
             <Label htmlFor="task-description">{t('planner.taskDialog.descriptionLabel')}</Label>
             <Textarea
               id="task-description"
+              maxLength={1000}
               value={form.description}
               onChange={(event) =>
                 setForm((current) => ({ ...current, description: event.target.value }))

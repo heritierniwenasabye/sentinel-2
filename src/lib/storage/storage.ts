@@ -9,12 +9,14 @@ import type {
   Priority,
   Task,
   UsageCategory,
+  UsageGoal,
 } from '@/types';
 import { DEFAULT_PREFERENCES, normalizePreferences } from '@/lib/preferences';
 import { STORAGE_KEY } from '@/lib/preferences';
 import { isNonEmptyString } from '@/lib/utils';
 import { toLocalIso, parseLocal, toDateKey } from '@/lib/date';
 import { isDateKey, normalizeWeekdays } from '@/lib/recurrence';
+import { MAX_IMPORT_BYTES, MAX_IMPORT_RECORDS } from '@/lib/io/limits';
 import { COURSE_COLORS } from '@/lib/courses';
 
 const PRIORITIES: Priority[] = ['low', 'medium', 'high'];
@@ -34,7 +36,7 @@ const USAGE_CATEGORIES: UsageCategory[] = [
 ];
 const RECURRENCES: CommitmentRecurrence[] = ['none', 'weekly'];
 
-const DATE_KEY = /^\d{4}-\d{2}-\d{2}$/;
+const validId = (id: unknown): id is string => typeof id === 'string' && /^[A-Za-z0-9_.:-]{1,128}$/.test(id);
 
 export function createEmptyData(): AppData {
   return {
@@ -43,6 +45,7 @@ export function createEmptyData(): AppData {
     tasks: [],
     commitments: [],
     usage: [],
+    usageGoals: [],
     preferences: { ...DEFAULT_PREFERENCES },
     demoLoaded: false,
   };
@@ -54,13 +57,16 @@ function validateCourse(raw: unknown, errors: string[], index: number): Course |
     return null;
   }
   const value = raw as Record<string, unknown>;
-  if (!isNonEmptyString(value.id) || !isNonEmptyString(value.name)) {
+  if (!validId(value.id) || !isNonEmptyString(value.name)) {
     errors.push(`courses[${index}]: missing id or name`);
     return null;
   }
   const color = COURSE_COLORS.includes(value.color as CourseColor)
     ? (value.color as CourseColor)
     : 'blue';
+  if ((value.semesterStart && !isDateKey(value.semesterStart)) || (value.semesterEnd && !isDateKey(value.semesterEnd)) || (isDateKey(value.semesterStart) && isDateKey(value.semesterEnd) && value.semesterEnd < value.semesterStart)) {
+    errors.push(`courses[${index}]: invalid semester dates`); return null;
+  }
   const cleanDate = (input: unknown): string =>
     isDateKey(input) ? input : '';
 
@@ -74,9 +80,9 @@ function validateCourse(raw: unknown, errors: string[], index: number): Course |
     semesterEnd: cleanDate(value.semesterEnd),
     archived: value.archived === true,
     createdAt:
-      typeof value.createdAt === 'string'
-        ? (parseLocal(value.createdAt) ?? new Date()).toISOString()
-        : new Date().toISOString(),
+      typeof value.createdAt === 'string' && parseLocal(value.createdAt)
+        ? value.createdAt
+        : toLocalIso(new Date()),
   };
 }
 
@@ -86,7 +92,7 @@ function validateTask(raw: unknown, errors: string[], index: number): Task | nul
     return null;
   }
   const value = raw as Record<string, unknown>;
-  if (!isNonEmptyString(value.id) || !isNonEmptyString(value.title)) {
+  if (!validId(value.id) || !isNonEmptyString(value.title)) {
     errors.push(`tasks[${index}]: missing id or title`);
     return null;
   }
@@ -96,11 +102,14 @@ function validateTask(raw: unknown, errors: string[], index: number): Task | nul
     return null;
   }
   const estimatedMinutes = Number(value.estimatedMinutes);
-  if (!Number.isFinite(estimatedMinutes) || estimatedMinutes < 0) {
+  if (!Number.isFinite(estimatedMinutes) || estimatedMinutes < 0 || estimatedMinutes > 2400) {
     errors.push(`tasks[${index}]: invalid estimatedMinutes`);
     return null;
   }
   const completedMinutes = Number(value.completedMinutes ?? 0);
+  if (!Number.isFinite(completedMinutes) || completedMinutes < 0 || completedMinutes > estimatedMinutes) {
+    errors.push(`tasks[${index}]: invalid completedMinutes`); return null;
+  }
   const priority = PRIORITIES.includes(value.priority as Priority)
     ? (value.priority as Priority)
     : 'medium';
@@ -120,9 +129,9 @@ function validateTask(raw: unknown, errors: string[], index: number): Task | nul
     priority,
     completed: value.completed === true,
     createdAt:
-      typeof value.createdAt === 'string'
-        ? (parseLocal(value.createdAt) ?? new Date()).toISOString()
-        : new Date().toISOString(),
+      typeof value.createdAt === 'string' && parseLocal(value.createdAt)
+        ? value.createdAt
+        : toLocalIso(new Date()),
   };
 }
 
@@ -132,7 +141,7 @@ function validateCommitment(raw: unknown, errors: string[], index: number): Comm
     return null;
   }
   const value = raw as Record<string, unknown>;
-  if (!isNonEmptyString(value.id) || !isNonEmptyString(value.title)) {
+  if (!validId(value.id) || !isNonEmptyString(value.title)) {
     errors.push(`commitments[${index}]: missing id or title`);
     return null;
   }
@@ -149,6 +158,10 @@ function validateCommitment(raw: unknown, errors: string[], index: number): Comm
     ? (value.recurrence as CommitmentRecurrence)
     : 'none';
   const weekdays = normalizeWeekdays(value.weekdays);
+  if (recurrence === 'weekly' && (weekdays.length === 0 || (value.recurrenceUntil && (!isDateKey(value.recurrenceUntil) || value.recurrenceUntil < toDateKey(start))))) {
+    errors.push(`commitments[${index}]: invalid recurrence`); return null;
+  }
+  if (Array.isArray(value.exceptions) && value.exceptions.some(item => !isDateKey(item))) errors.push(`commitments[${index}]: invalid exception skipped`);
   const exceptions = Array.isArray(value.exceptions)
     ? Array.from(new Set(value.exceptions.filter((item): item is string => isDateKey(item))))
     : [];
@@ -174,11 +187,11 @@ function validateUsage(raw: unknown, errors: string[], index: number): DigitalUs
     return null;
   }
   const value = raw as Record<string, unknown>;
-  if (!isNonEmptyString(value.id) || !isNonEmptyString(value.app)) {
+  if (!validId(value.id) || !isNonEmptyString(value.app)) {
     errors.push(`usage[${index}]: missing id or app`);
     return null;
   }
-  const date = typeof value.date === 'string' && DATE_KEY.test(value.date) ? value.date : null;
+  const date = isDateKey(value.date) ? value.date : null;
   const parsedDate = date ? parseLocal(`${date}T00:00:00`) : null;
   if (!date || !parsedDate) {
     errors.push(`usage[${index}]: invalid date`);
@@ -200,9 +213,9 @@ function validateUsage(raw: unknown, errors: string[], index: number): DigitalUs
     minutes: Math.round(minutes),
     category,
     createdAt:
-      typeof value.createdAt === 'string'
-        ? (parseLocal(value.createdAt) ?? new Date()).toISOString()
-        : new Date().toISOString(),
+      typeof value.createdAt === 'string' && parseLocal(value.createdAt)
+        ? value.createdAt
+        : toLocalIso(new Date()),
   };
 }
 
@@ -211,10 +224,10 @@ export interface ValidationResult {
   errors: string[];
 }
 
-function dedupeById<T extends { id: string }>(items: T[]): T[] {
+function dedupeById<T extends { id: string }>(items: T[], errors: string[]): T[] {
   const seen = new Set<string>();
   return items.filter((item) => {
-    if (seen.has(item.id)) return false;
+    if (seen.has(item.id)) { errors.push(`Duplicate id: ${item.id}`); return false; }
     seen.add(item.id);
     return true;
   });
@@ -244,11 +257,12 @@ function deriveCourses(tasks: Task[]): Course[] {
 }
 
 /** Links tasks to courses by id first, then by name when only a name survives. */
-function reconcileCourseLinks(tasks: Task[], courses: Course[]): Task[] {
+function reconcileCourseLinks(tasks: Task[], courses: Course[], errors: string[]): Task[] {
   const byId = new Map(courses.map((course) => [course.id, course]));
   const byName = new Map(courses.map((course) => [course.name.trim().toLowerCase(), course]));
   return tasks.map((task) => {
-    if (task.courseId && byId.has(task.courseId)) return task;
+    if (task.courseId && byId.has(task.courseId)) return { ...task, course: byId.get(task.courseId)!.name };
+    if (task.courseId) errors.push(`Assignment ${task.id}: unknown course id; relationship repaired.`);
     const match = task.course ? byName.get(task.course.trim().toLowerCase()) : undefined;
     return { ...task, courseId: match?.id ?? '' };
   });
@@ -278,11 +292,16 @@ export function parseAppData(raw: unknown): ValidationResult {
     return { data: null, errors: ['File does not contain SENTINEL tasks, commitments or preferences.'] };
   }
 
+  const collections = ['courses', 'tasks', 'commitments', 'usage', 'usageGoals'];
+  if (collections.some(key => candidate[key] !== undefined && !Array.isArray(candidate[key]))) {
+    return { data: null, errors: ['Record collections must be arrays.'] };
+  }
+  if (Number(candidate.version ?? 3) > 3) return { data: null, errors: ['This data version requires a newer SENTINEL release.'] };
   let courses = Array.isArray(candidate.courses)
     ? dedupeById(
         candidate.courses
           .map((item, index) => validateCourse(item, errors, index))
-          .filter((item): item is Course => item !== null),
+          .filter((item): item is Course => item !== null), errors,
       )
     : [];
 
@@ -290,20 +309,20 @@ export function parseAppData(raw: unknown): ValidationResult {
     ? dedupeById(
         candidate.tasks
           .map((item, index) => validateTask(item, errors, index))
-          .filter((item): item is Task => item !== null),
+          .filter((item): item is Task => item !== null), errors,
       )
     : [];
 
   if (courses.length === 0 && tasks.some((task) => !task.courseId && task.course)) {
     courses = deriveCourses(tasks);
   }
-  tasks = reconcileCourseLinks(tasks, courses);
+  tasks = reconcileCourseLinks(tasks, courses, errors);
 
   const commitments = Array.isArray(candidate.commitments)
     ? dedupeById(
         candidate.commitments
           .map((item, index) => validateCommitment(item, errors, index))
-          .filter((item): item is Commitment => item !== null),
+          .filter((item): item is Commitment => item !== null), errors,
       )
     : [];
 
@@ -311,10 +330,21 @@ export function parseAppData(raw: unknown): ValidationResult {
     ? dedupeById(
         candidate.usage
           .map((item, index) => validateUsage(item, errors, index))
-          .filter((item): item is DigitalUsageEntry => item !== null),
+          .filter((item): item is DigitalUsageEntry => item !== null), errors,
       )
     : [];
 
+  const goalApps = new Set<string>();
+  const usageGoals: UsageGoal[] = [];
+  for (const rawGoal of (candidate.usageGoals as unknown[] | undefined) ?? []) {
+    const g = rawGoal as Partial<UsageGoal> | null;
+    const key = typeof g?.app === 'string' ? g.app.trim().toLowerCase() : '';
+    if (!g || !validId(g.id) || !key || key.length > 80 || !Number.isInteger(g.dailyLimitMinutes) || g.dailyLimitMinutes! < 1 || g.dailyLimitMinutes! > 1440 || goalApps.has(key) || usageGoals.some(goal => goal.id === g.id)) {
+      errors.push('Invalid or duplicate usage goal.'); continue;
+    }
+    goalApps.add(key);
+    usageGoals.push({ id: g.id, app: g.app!.trim(), dailyLimitMinutes: g.dailyLimitMinutes! });
+  }
   const rawPreferences =
     candidate.preferences && typeof candidate.preferences === 'object'
       ? (candidate.preferences as Partial<AppData['preferences']>)
@@ -335,6 +365,7 @@ export function parseAppData(raw: unknown): ValidationResult {
       tasks,
       commitments,
       usage,
+      usageGoals,
       preferences,
       demoLoaded: candidate.demoLoaded === true,
     },
@@ -354,12 +385,15 @@ export interface StoredEnvelope {
  */
 export const CORRUPT_BACKUP_KEY = 'sentinel.v2.data.corrupt';
 
-function backupUnreadable(raw: string): void {
-  if (!hasStorage()) return;
+function backupUnreadable(raw: string): boolean {
+  if (!hasStorage()) return false;
   try {
+    const existing = window.localStorage.getItem(CORRUPT_BACKUP_KEY);
+    if (existing && existing !== raw) return false;
     window.localStorage.setItem(CORRUPT_BACKUP_KEY, raw);
+    return window.localStorage.getItem(CORRUPT_BACKUP_KEY) === raw;
   } catch {
-    /* storage is full or blocked — nothing more we can do safely */
+    return false;
   }
 }
 
@@ -379,9 +413,9 @@ export function loadAppData(): AppData | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as unknown;
     const result = parseAppData(parsed);
-    if (!result.data) {
+    if (!result.data || result.errors.length > 0) {
       backupUnreadable(raw);
-      return null;
+      return result.data;
     }
     return result.data;
   } catch {
@@ -393,6 +427,14 @@ export function loadAppData(): AppData | null {
 export function saveAppData(data: AppData): boolean {
   if (!hasStorage()) return false;
   try {
+    // Never overwrite damaged input unless its exact raw backup is safely stored.
+    const current = window.localStorage.getItem(STORAGE_KEY);
+    if (current) {
+      let damaged = false;
+      try { const parsed = parseAppData(JSON.parse(current)); damaged = !parsed.data || parsed.errors.length > 0; }
+      catch { damaged = true; }
+      if (damaged && !backupUnreadable(current)) return false;
+    }
     const envelope: StoredEnvelope = {
       schema: 3,
       savedAt: new Date().toISOString(),
@@ -433,12 +475,19 @@ export interface ImportResult {
 }
 
 export function parseImport(text: string): ImportResult {
+  if (new TextEncoder().encode(text).length > MAX_IMPORT_BYTES) return { data: null, errors: ['File exceeds 5 MiB.'] };
   if (!text.trim()) return { data: null, errors: ['File is empty.'] };
   let parsed: unknown;
   try {
     parsed = JSON.parse(text);
   } catch {
     return { data: null, errors: ['File is not valid JSON.'] };
+  }
+  if (parsed && typeof parsed === 'object') {
+    const envelope = parsed as Record<string, unknown>;
+    const candidate = (envelope.data && typeof envelope.data === 'object' ? envelope.data : envelope) as Record<string, unknown>;
+    const count = ['courses','tasks','commitments','usage','usageGoals'].reduce((sum, key) => sum + (Array.isArray(candidate[key]) ? (candidate[key] as unknown[]).length : 0), 0);
+    if (count > MAX_IMPORT_RECORDS) return { data: null, errors: ['File exceeds 10,000 records.'] };
   }
   return parseAppData(parsed);
 }
@@ -448,6 +497,7 @@ export interface DataCounts {
   tasks: number;
   commitments: number;
   usage: number;
+  usageGoals: number;
 }
 
 export function countAppData(data: AppData): DataCounts {
@@ -456,6 +506,7 @@ export function countAppData(data: AppData): DataCounts {
     tasks: data.tasks.length,
     commitments: data.commitments.length,
     usage: data.usage.length,
+    usageGoals: data.usageGoals?.length ?? 0,
   };
 }
 
@@ -473,7 +524,7 @@ export function mergeAppData(
   current: AppData,
   incoming: AppData,
 ): { data: AppData; summary: MergeSummary } {
-  const summary: MergeSummary = { courses: 0, tasks: 0, commitments: 0, usage: 0, skipped: 0 };
+  const summary: MergeSummary = { courses: 0, tasks: 0, commitments: 0, usage: 0, usageGoals: 0, skipped: 0 };
 
   const courseIds = new Set(current.courses.map((course) => course.id));
   const courseNames = new Set(current.courses.map((course) => course.name.trim().toLowerCase()));
@@ -543,6 +594,12 @@ export function mergeAppData(
     return true;
   });
 
+  const mergedGoals = [...(current.usageGoals ?? [])];
+  for (const goal of incoming.usageGoals ?? []) {
+    if (mergedGoals.some(existing => existing.id === goal.id || existing.app.trim().toLowerCase() === goal.app.trim().toLowerCase())) {
+      summary.skipped += 1;
+    } else { mergedGoals.push(goal); summary.usageGoals += 1; }
+  }
   return {
     data: {
       ...current,
@@ -551,6 +608,7 @@ export function mergeAppData(
       tasks: [...current.tasks, ...addedTasks],
       commitments: [...current.commitments, ...addedCommitments],
       usage: [...current.usage, ...addedUsage],
+      usageGoals: mergedGoals,
       demoLoaded: current.demoLoaded || incoming.demoLoaded,
     },
     summary,
@@ -559,3 +617,19 @@ export function mergeAppData(
 
 /** Date key helper re-exported for the data layer consumers. */
 export { toDateKey };
+
+/** Raw recovery evidence remains untouched until an explicit download/restore decision. */
+export function readRecoveryBackup(): string | null {
+  try {
+    const primary = window.localStorage.getItem(STORAGE_KEY);
+    if (primary) {
+      try { const parsed = parseAppData(JSON.parse(primary)); if (!parsed.data || parsed.errors.length) return primary; }
+      catch { return primary; }
+    }
+    return window.localStorage.getItem(CORRUPT_BACKUP_KEY);
+  } catch { return null; }
+}
+
+export function readRecoveryArchive(): string | null {
+  try { return window.localStorage.getItem(CORRUPT_BACKUP_KEY); } catch { return null; }
+}

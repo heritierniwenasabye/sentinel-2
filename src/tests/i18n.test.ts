@@ -65,3 +65,17 @@ describe('translation dictionaries', () => {
     expect(issues).toEqual([]);
   });
 });
+
+it('contains every statically referenced UI translation key', async () => {
+  const { readdir, readFile } = await import('node:fs/promises');
+  const { resolve } = await import('node:path');
+  const files = await readdir(resolve('src'), { recursive: true });
+  const missing: string[] = [];
+  for (const file of files.filter(f=>f.endsWith('.tsx') && !f.includes('tests/'))) {
+    const source = await readFile(resolve('src',file),'utf8');
+    for (const match of source.matchAll(/\bt\(['"]([a-zA-Z][\w.-]+)['"]/g)) {
+      const key=match[1]; if (!englishKeys.has(key) && !englishKeys.has(key+'_one') && !englishKeys.has(key+'_other')) missing.push(file+': '+key);
+    }
+  }
+  expect(missing).toEqual([]);
+});

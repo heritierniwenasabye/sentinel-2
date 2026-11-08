@@ -16,8 +16,8 @@ Browser
 
 ## Stack
 
-React 18 · TypeScript (strict) · Vite 5 · Tailwind 3 · Radix UI primitives · Recharts ·
-date-fns · i18next · Vitest + React Testing Library.
+React 18 · TypeScript (strict) · Vite 8 · Tailwind 3 · Radix UI primitives · Recharts ·
+date-fns · i18next · Vitest 5 + React Testing Library.
 
 There is no state library: a single context (`src/hooks/use-app.tsx`) owns the `AppData` object and
 persists it on every change. Derived data (schedule, pressure score, habit totals) is computed with
@@ -31,6 +31,7 @@ persists it on every change. Derived data (schedule, pressure score, habit total
 | `Task` | A piece of coursework | `courseId`, `course` (display snapshot), `deadline`, `estimatedMinutes`, `completedMinutes`, `priority`, `completed` |
 | `Commitment` | Fixed time study must work around | `start`, `end`, `category`, `recurrence`, `weekdays`, `recurrenceUntil`, `exceptions` |
 | `CommitmentOccurrence` | A series expanded onto one date | `occurrenceId`, `dateKey`, `isRecurring` |
+| `UsageGoal` | Daily per-app limit based on manual entries | `id`, `app`, `dailyLimitMinutes` |
 | `DigitalUsageEntry` | Self-reported screen time | `app`, `date`, `minutes`, `category` |
 | `UserPreferences` | Planning rules and interface state | study window, daily cap, break, sleep, theme, language, onboarding flag |
 
@@ -73,7 +74,7 @@ Pure function `buildSchedule(input)`. Inputs are never mutated.
 All four pages use the same engine through `useWeekSchedule`, so the planner, overview, wellness
 insights and simulation cannot disagree.
 
-**Granularity:** 30-minute slots; a 90-minute assignment is three consecutive slots when the calendar
+**Granularity:** 30-minute slots with a shorter final remainder block; a 90-minute assignment is three consecutive slots when the calendar
 allows, otherwise split across blocks or days, with any shortfall reported as unscheduled minutes.
 
 ## Simulation (`src/lib/simulation/`)
@@ -116,7 +117,7 @@ navigation, `aria-live` status messages, chart alternatives, and `prefers-reduce
 
 ## Testing
 
-Vitest + React Testing Library cover the engine, recurrence expansion, simulation isolation, storage
+Vitest 5 + React Testing Library cover the engine, recurrence expansion, simulation isolation, storage
 validation and migration, import/export formats, habit maths, translation parity and the real task
 form (priority, calendar, persistence, scheduling). See `README.md` for the current passing counts.
 
@@ -128,3 +129,19 @@ form (priority, calendar, persistence, scheduling). See `README.md` for the curr
 - Recovered screen time changes capacity only when the student explicitly opts in; it is never
   silently converted into study minutes.
 - One browser profile is the storage boundary; JSON export is the manual sync path.
+
+## Release hardening additions
+
+The schema-3 `usageGoals` array is optional for legacy imports and present in current exports. Local
+corrupt/partially invalid payloads are preserved byte-for-byte; Settings can download and validate them,
+then merge valid records after confirmation. If preserving the raw evidence fails, writes refuse to
+overwrite the damaged primary. Upload limits apply at the import boundary (5 MiB/10,000 records).
+
+`useClock` refreshes date-dependent views every minute and on focus/visibility return. The engine
+traverses time once, carries breaks across assignment boundaries and conserves eligible remaining
+demand. Local clock construction and overnight recurrence expansion protect DST windows and carry-in.
+Simulation uses the latest screen reduction and never stacks it with saved capacity.
+
+Pages are lazy-loaded behind Suspense and a non-destructive error boundary. Inter fonts are bundled
+locally. Shared radio groups support arrow/Home/End selection; comparison metrics use semantic dt/dd.
+Current verification is in [HARDENING_ACCEPTANCE.md](HARDENING_ACCEPTANCE.md).
