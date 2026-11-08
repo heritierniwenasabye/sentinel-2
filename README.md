@@ -28,13 +28,19 @@ A conventional calendar shows **what is scheduled**. SENTINEL recalculates **wha
 
 **Live application:** https://sentinel-2-delta.vercel.app/
 
+### Product screenshots
+
+Real screenshots from the fictional demo workspace, captured from the running SENTINEL application.
+
 | Overview | Smart Planner |
 | :---: | :---: |
-| _Screenshot placeholder — `docs/screenshots/overview.png`_ | _Screenshot placeholder — `docs/screenshots/smart-planner.png`_ |
-| **Simulation Lab** | **Wellness Insights** |
-| _Screenshot placeholder — `docs/screenshots/simulation-lab.png`_ | _Screenshot placeholder — `docs/screenshots/wellness-insights.png`_ |
+| ![SENTINEL overview dashboard with upcoming deadlines and study metrics](docs/screenshots/overview.png) | ![SENTINEL smart planner showing scheduled study blocks and commitments](docs/screenshots/smart-planner.png) |
 
-> **Screenshot status:** These are intentionally labelled placeholders, not fabricated screenshots. Capture the four actual production views with fictional demo data, save them at the indicated paths, and replace each placeholder cell with `![Description](docs/screenshots/filename.png)`. Do not publish personal schedules or identifiable student data.
+| Simulation Lab |
+| :---: |
+| ![SENTINEL Simulation Lab showing current and simulated plan comparison](docs/screenshots/simulation-lab.png) |
+
+The **Digital Habits** and **Wellness Insights** views are also available in the live application. Their screenshots will be added here after the corresponding image files are verified in this branch.
 
 ### Three-minute demo path
 
