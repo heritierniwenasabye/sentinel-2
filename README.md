@@ -12,6 +12,8 @@
 
 **InnovateMU 2026 · Wellness in Tech**
 
+**Viewing on a phone?** Tap any screenshot to open it at full size. Scroll down for the architecture and simulation diagrams, followed by their plain-language explanations.
+
 </div>
 
 ---
@@ -28,19 +30,29 @@ A conventional calendar shows **what is scheduled**. SENTINEL recalculates **wha
 
 **Live application:** https://sentinel-2-delta.vercel.app/
 
-### Product screenshots
+### Product screenshots — mobile-friendly gallery
 
-Real screenshots from the fictional demo workspace, captured from the running SENTINEL application.
+These are actual captures of the fictional demo workspace. Each screenshot is displayed on its own line so visitors can tap to enlarge it on a phone.
 
-| Overview | Smart Planner |
-| :---: | :---: |
-| ![SENTINEL overview dashboard with upcoming deadlines and study metrics](docs/screenshots/overview.png) | ![SENTINEL smart planner showing scheduled study blocks and commitments](docs/screenshots/smart-planner.png) |
+#### 1. Overview
 
-| Simulation Lab |
-| :---: |
-| ![SENTINEL Simulation Lab showing current and simulated plan comparison](docs/screenshots/simulation-lab.png) |
+[![SENTINEL Overview: deadlines, planned study, and workload summary](docs/screenshots/overview.png)](docs/screenshots/overview.png)
 
-The **Digital Habits** and **Wellness Insights** views are also available in the live application. Their screenshots will be added here after the corresponding image files are verified in this branch.
+#### 2. Smart Planner
+
+[![SENTINEL Smart Planner: generated study blocks and fixed commitments](docs/screenshots/smart-planner.png)](docs/screenshots/smart-planner.png)
+
+#### 3. Simulation Lab
+
+[![SENTINEL Simulation Lab: baseline and hypothetical plan comparison](docs/screenshots/simulation-lab.png)](docs/screenshots/simulation-lab.png)
+
+#### 4. Digital Habits
+
+Use the [live application](https://sentinel-2-delta.vercel.app/) to explore manually recorded screen-time habits. A screenshot will appear here once its image file is confirmed in this branch.
+
+#### 5. Wellness Insights
+
+Use the [live application](https://sentinel-2-delta.vercel.app/) to inspect the explained, nonclinical workload-pressure score. A screenshot will appear here once its image file is confirmed in this branch.
 
 ### Three-minute demo path
 
@@ -76,6 +88,8 @@ flowchart TD
     F --> H["Baseline vs simulated deltas"]
     B --> I["Analytics<br/>Workload pressure · manual digital habits"]
 ```
+
+**Diagram in words:** Student input enters React state, which saves validated workspace data in browser localStorage. The scheduling engine builds a feasible plan; the simulation layer runs a separate hypothetical plan through the same engine and compares outcomes. Analytics reports planning pressure and manually entered digital habits.
 
 **Stack:** React 18, strict TypeScript, Vite 8, Tailwind CSS, Radix UI, Recharts, date-fns and i18next. Vitest/React Testing Library cover logic and components; Playwright tests real Chromium workflows.
 
@@ -114,6 +128,8 @@ flowchart LR
     F -->|No / reset| G["Keep saved plan"]
     F -->|Yes| H["Commit validated changes"]
 ```
+
+**Diagram in words:** The saved plan and hypothetical plan are scheduled independently, their actual totals are compared, and the original data changes only if the student explicitly confirms the scenario.
 
 The scenario preview does not mutate the original dataset. The comparison derives planned minutes, unscheduled demand, capacity and conflicts from the two actual engine runs. Screen-time reductions use manually recorded discretionary usage, are capped and require explicit allocation; the app never claims that hypothetical minutes were actually recovered.
 
