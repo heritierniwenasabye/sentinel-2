@@ -48,11 +48,11 @@ These are actual captures of the fictional demo workspace. Each screenshot is di
 
 #### 4. Digital Habits
 
-Use the [live application](https://sentinel-2-delta.vercel.app/) to explore manually recorded screen-time habits. A screenshot will appear here once its image file is confirmed in this branch.
+[![SENTINEL Digital Habits: manually entered screen time and app goals](docs/screenshots/Digital-habits.png)](docs/screenshots/Digital-habits.png)
 
 #### 5. Wellness Insights
 
-Use the [live application](https://sentinel-2-delta.vercel.app/) to inspect the explained, nonclinical workload-pressure score. A screenshot will appear here once its image file is confirmed in this branch.
+[![SENTINEL Wellness Insights: workload-pressure indicators and rest insights](docs/screenshots/Wellness%20Insights.png)](docs/screenshots/Wellness%20Insights.png)
 
 ### Three-minute demo path
 
