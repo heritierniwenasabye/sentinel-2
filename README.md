@@ -1,309 +1,215 @@
-# SENTINEL 2.0
+<div align="center">
 
-**Plan for life, not just deadlines.**
+# 🛡️ SENTINEL 2.0
 
-A digital wellness decision engine for university students.
+### Plan for life, not just deadlines.
 
-Current product polish/demo gate: [`docs/PRODUCT_POLISH.md`](docs/PRODUCT_POLISH.md).
+**A student wellness decision engine that makes the trade-offs behind a busy week visible.**
 
-Preceding release-hardening evidence: [`docs/HARDENING_ACCEPTANCE.md`](docs/HARDENING_ACCEPTANCE.md). SENTINEL turns coursework, classes, work
-shifts, appointments, rest and screen-time habits into a realistic weekly plan — then lets you simulate
-decisions before you commit to them.
+[**Try the live app**](https://sentinel-2-delta.vercel.app/) · [**Explore the architecture**](docs/ARCHITECTURE.md) · [**Review verification evidence**](docs/FINAL_RELEASE_VERIFICATION.md) · [**See the demo script**](docs/HACKATHON_DEMO.md)
 
-Everything is computed from your own entries by deterministic TypeScript modules. There is no AI
-prediction, no external service, no account and no API key. Data lives in your browser.
+![React](https://img.shields.io/badge/React-18-149ECA?style=flat-square) ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=flat-square) ![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square) ![Privacy](https://img.shields.io/badge/Data-Local%20to%20Browser-16856A?style=flat-square)
 
-### Hackathon wellness alignment
+**InnovateMU 2026 · Wellness in Tech**
 
-SENTINEL addresses student digital wellness as a **planning problem**, not a screen-time scoreboard.
-It protects sleep and breaks, caps continuous study, surfaces overload before it becomes a crisis, and
-lets a student rehearse a change (a shift, a later deadline, less screen time) before committing to it.
-The four Maryville wellness dimensions — intellectual, emotional, financial and physical — are mapped
-to features that act on real, self-reported data. Claims stay deliberately modest: Workload Pressure
-is a transparent heuristic, screen-time entries are manual, nothing is diagnosed or scored clinically,
-and **no data leaves the device**.
+**Viewing on a phone?** Tap any screenshot to open it at full size. Scroll down for the architecture and simulation diagrams, followed by their plain-language explanations.
+
+</div>
 
 ---
 
-## What it does
+## The decision behind the product
 
-| Area | Capability |
+> An extra campus shift opens up. You need the income—but you have an assignment due soon. If you accept the shift, what happens to your study plan?
+
+A conventional calendar shows **what is scheduled**. SENTINEL recalculates **what is feasible after a decision**. It turns assignments, class meetings, work shifts, personal commitments, rest and self-reported digital habits into a weekly plan, then compares that plan with a hypothetical alternative.
+
+**The differentiator:** a scenario is a reversible preview, not an immediate change to the student's real schedule.
+
+## See it in action
+
+**Live application:** https://sentinel-2-delta.vercel.app/
+
+### Product screenshots — mobile-friendly gallery
+
+These are actual captures of the fictional demo workspace. Each screenshot is displayed on its own line so visitors can tap to enlarge it on a phone.
+
+#### 1. Overview
+
+[![SENTINEL Overview: deadlines, planned study, and workload summary](docs/screenshots/overview.png)](docs/screenshots/overview.png)
+
+#### 2. Smart Planner
+
+[![SENTINEL Smart Planner: generated study blocks and fixed commitments](docs/screenshots/smart-planner.png)](docs/screenshots/smart-planner.png)
+
+#### 3. Simulation Lab
+
+[![SENTINEL Simulation Lab: baseline and hypothetical plan comparison](docs/screenshots/simulation-lab.png)](docs/screenshots/simulation-lab.png)
+
+#### 4. Digital Habits
+
+[![SENTINEL Digital Habits: manually entered screen time and app goals](docs/screenshots/Digital-habits.png)](docs/screenshots/Digital-habits.png)
+
+#### 5. Wellness Insights
+
+[![SENTINEL Wellness Insights: workload-pressure indicators and rest insights](docs/screenshots/Wellness%20Insights.png)](docs/screenshots/Wellness%20Insights.png)
+
+### Three-minute demo path
+
+1. Open **Settings → Load demo data**, confirm the fictional Alex Morgan workspace (four courses, nine assignments and sample commitments).
+2. Visit **Overview** to see upcoming deadlines, planned study and workload.
+3. Open **Smart Planner** to see generated study blocks, fixed commitments and unscheduled demand.
+4. In **Simulation Lab**, add a *hypothetical* campus shift, compare **Current** and **Simulated** results, and explain the observed delta. **Reset** to leave the saved plan unchanged.
+5. Show **Wellness Insights** and its explicitly nonclinical workload-pressure indicator.
+
+**Important:** A hypothetical shift does not always reduce planned study; it may move work or have no effect. SENTINEL reports the actual computed outcome rather than inventing a dramatic one.
+
+## What students can do
+
+| Workspace | Student-facing capability |
 | --- | --- |
-| **First run** | Empty workspace, skippable five-step setup (name, study hours, limits, sleep, theme, language, first course, first assignment), and a plain statement that data is local. No fictional student is injected. |
-| **Overview** | Computed metrics, weekly workload chart, today's schedule, nearest deadlines and one data-driven insight. Empty state offers real next steps. |
-| **Smart Planner** | Two tabs. **Plan**: weekly calendar, task and commitment CRUD, generated study blocks that open their assignment, unscheduled coursework with reasons, conflict detection. **Courses**: full course management. |
-| **Courses** | Add, edit, archive, restore and delete courses; name, code, colour, instructor, semester dates. Deleting asks whether to keep (unlink) or delete the assignments. Archived courses are hidden from new assignments but keep their history. |
-| **Assignments** | Create, edit, delete, complete and reopen; course reference, priority, deadline calendar, estimated and completed study minutes, description. Every change recalculates the plan. |
-| **Commitments** | One-time or weekly recurring events with weekday selection, end date, exceptions, and "this occurrence vs the entire series" editing and deletion. |
-| **Simulation Lab** | Build a scenario (extra shift, removed commitment, moved deadline, new duration, reserved rest, different study window, reduced screen time), compare baseline vs simulated schedules, read computed explanations, then apply after confirmation. |
-| **Digital Habits** | Manual screen-time entries with categories and filters, totals, daily average, seven-day trend, usage by app and category, plus a discretionary-reduction simulator. |
-| **Wellness Insights** | Workload Pressure indicator (0–100) with its full formula, derived observations, daily load breakdown, and the four Maryville wellness dimensions wired to real metrics. |
-| **Data** | JSON export, JSON import preview with **merge or replace**, CSV import/export and templates for courses, assignments and commitments, demo load/reset with confirmation, and a confirmed wipe. |
-| **Settings** | Planning preferences, light/dark/system appearance, five languages, data management. |
+| **Overview** | Deadlines, planned study, workload and an actionable insight |
+| **Smart Planner** | Manage optional courses, flexible tasks and fixed/recurring commitments; generate feasible study blocks; surface conflicts and unscheduled work |
+| **Simulation Lab** | Preview added/removed commitments, deadline changes, study windows, rest and discretionary screen-time changes; confirm before applying |
+| **Digital Habits** | Enter screen time manually, track app goals and explore hypothetical discretionary reductions |
+| **Wellness Insights** | Understand an explained 0–100 workload-pressure heuristic and intellectual, emotional, financial and physical planning dimensions |
+| **Settings & Data** | Five languages, appearance and study preferences, JSON backup/restore, CSV import/export, fictional demo workspace |
 
----
+## Architecture
 
-## First run and demo data
+```mermaid
+flowchart TD
+    A["Student input<br/>Tasks · courses · shifts · preferences"] --> B["React + TypeScript app state"]
+    B <--> C[("Browser localStorage<br/>Validated schema + recovery")]
+    B --> D["Pure scheduling engine<br/>src/lib/scheduling/engine.ts"]
+    B --> E["Immutable scenario operations<br/>src/lib/simulation/"]
+    E --> F["Run the same scheduler twice"]
+    D --> G["Weekly study blocks<br/>Unscheduled work · conflicts"]
+    F --> H["Baseline vs simulated deltas"]
+    B --> I["Analytics<br/>Workload pressure · manual digital habits"]
+```
 
-A new workspace starts **empty** — no courses, no Example 101, no fake charts. Empty states explain
-what to do and provide the action. The setup dialog can be skipped. Use a fresh browser profile to replay onboarding; clearing workspace data retains onboarding completion.
+**Diagram in words:** Student input enters React state, which saves validated workspace data in browser localStorage. The scheduling engine builds a feasible plan; the simulation layer runs a separate hypothetical plan through the same engine and compares outcomes. Analytics reports planning pressure and manually entered digital habits.
 
-The demonstration set (fictional student **Alex Morgan**: four courses, nine assignments, classes,
-campus shifts, gym, rest, a week of screen time) is installed only from
-**Settings → Load demo data** (or the Overview empty state), always after a confirmation that explains
-the replacement. **Reset demo data** regenerates it with dates relative to today.
+**Stack:** React 18, strict TypeScript, Vite 8, Tailwind CSS, Radix UI, Recharts, date-fns and i18next. Vitest/React Testing Library cover logic and components; Playwright tests real Chromium workflows.
 
----
+The app is a static single-page application deployed on Vercel. It has **no account, server database, external AI API, or automatic device monitoring**. Student data is stored in the current browser profile and site origin; JSON export is the full-workspace backup path.
 
-## Getting started
+### The scheduling algorithm
+
+**Source:** [`buildSchedule`](src/lib/scheduling/engine.ts) · [recurrence expansion](src/lib/recurrence.ts) · [architecture detail](docs/ARCHITECTURE.md)
+
+1. Expand weekly recurring commitments into concrete occurrences, respecting exceptions and end dates.
+2. Subtract sleep and fixed commitments from each day's preferred study window. Exclude time already past and construct **30-minute scheduling slots**.
+3. Cap usable daily study capacity at the lesser of free time and the configured study maximum (plus any explicitly allocated focus-capacity bonus).
+4. Select unfinished tasks due within the displayed week **plus seven days of look-ahead**. Sort by **earliest deadline**, then **high → medium → low priority**, then estimated duration.
+5. Allocate available slots chronologically, without crossing a task deadline, daily cap or protected commitment. Limit continuous study to **90 minutes**, enforcing the configured breaks, including between different tasks.
+6. Permit a shorter final remainder block where appropriate; report every eligible minute that cannot fit as **unscheduled** with an explanation.
+
+**Accounting invariant (for eligible demand):**
+
+```text
+remaining(task) = max(0, estimatedMinutes − completedMinutes)
+eligible demand = scheduled study minutes + unscheduled study minutes
+```
+
+The engine is **deterministic and explainable**, not a globally optimal timetable solver. Free capacity is an upper bound; deadline and break constraints can prevent it from all being used.
+
+### What-if simulation: same engine, two futures
+
+```mermaid
+flowchart LR
+    A["Saved plan"] --> B["buildSchedule"]
+    A --> C["Apply hypothetical operations<br/>in memory only"]
+    C --> D["buildSchedule"]
+    B --> E["Compare actual totals"]
+    D --> E
+    E --> F{"Student confirms?"}
+    F -->|No / reset| G["Keep saved plan"]
+    F -->|Yes| H["Commit validated changes"]
+```
+
+**Diagram in words:** The saved plan and hypothetical plan are scheduled independently, their actual totals are compared, and the original data changes only if the student explicitly confirms the scenario.
+
+The scenario preview does not mutate the original dataset. The comparison derives planned minutes, unscheduled demand, capacity and conflicts from the two actual engine runs. Screen-time reductions use manually recorded discretionary usage, are capped and require explicit allocation; the app never claims that hypothetical minutes were actually recovered.
+
+### Workload Pressure is not a diagnosis
+
+SENTINEL computes a **0–100 planning heuristic** from five normalized factors:
+
+| Factor | Weight |
+| --- | ---: |
+| Remaining demand relative to capacity | 40 |
+| Unscheduled work | 25 |
+| Scheduling conflicts | 15 |
+| Long continuous study sessions | 12 |
+| Break availability | 8 |
+
+Bands: **Balanced 0–33**, **Elevated 34–66**, **High 67–100**. This is **not** a clinical or psychological assessment. See [implementation and caveats](docs/ARCHITECTURE.md).
+
+## Verification evidence
+
+The independent **8 November 2026 release-candidate audit** recorded:
+
+| Gate | Result |
+| --- | --- |
+| TypeScript typecheck and production build | **PASS** |
+| Unit / integration tests | **150 passed** across 15 files |
+| Chromium production-bundle browser tests | **27 passed** |
+| Timezone-focused scheduling suites | **91 tests per zone**: UTC, America/Chicago, Asia/Kathmandu |
+| Dependency audits | **0 reported vulnerabilities** at verification time |
+| Accessibility / responsive checks | Automated axe and keyboard checks; mobile-to-desktop viewport coverage |
+| Lint | **Not verified** — no lint script configured |
+
+These are **bounded local test results**, not a guarantee of defect-free behavior. Safari, Firefox, real screen-reader certification and hosted end-to-end verification were outside that audit's scope. Full evidence, exact tested commit, dates and caveats: [`docs/FINAL_RELEASE_VERIFICATION.md`](docs/FINAL_RELEASE_VERIFICATION.md).
+
+## Run locally
+
+**Requires Node.js 22.12+.** No environment variables or API keys are needed.
 
 ```bash
-# Node 22.12+ (acceptance verified on Node 24)
 npm ci
-npm run dev        # http://localhost:3000
-npm run typecheck  # tsc --noEmit (strict)
-npm run test       # vitest run
-npx playwright install chromium # one-time browser setup (Node 22.12+)
-npm run test:e2e   # real Chromium student workflows and 30 layout combinations
-npm run build      # typecheck + production bundle in dist/
-npm run preview    # serve the production build
+npm run dev
+# Open http://localhost:3000
 ```
 
-No environment variables are required.
-
-### Deployment
-
-`npm run build` produces a static SPA in `dist/`. `vercel.json` and `public/_redirects` provide the
-history fallback for Vercel and Netlify; any static host with an SPA rewrite works. `dist/` and
-`node_modules/` are ignored by Git. No credentials are stored in the repository.
-
----
-
-## How the scheduling engine works
-
-`src/lib/scheduling/engine.ts` is pure and deterministic; it never mutates its inputs. All pages use
-it through `useWeekSchedule`, so the planner, overview, insights and simulation cannot disagree.
-
-1. **Recurrence.** Weekly commitments are expanded onto concrete dates for the planned week, honouring
-   weekdays, an optional end date and exceptions (`src/lib/recurrence.ts`).
-2. **Capacity.** Each day's preferred study window minus sleep and fixed commitments, cut into
-   30-minute slots. Slots in the past are never created.
-3. **Daily cap.** `min(free minutes, maximum daily study + recovered focus bonus)`.
-4. **Scope.** Unfinished work due inside the week plus the next seven days (`SCHEDULING_LOOKAHEAD_DAYS`),
-   ordered by deadline, then priority (high → medium → low), then length. Work due the following Monday
-   is therefore prepared this week instead of appearing in a list with no blocks.
-5. **Placement.** Chronological slot filling. Never after the deadline, never past the daily cap, at most
-   90 continuous minutes, with a break of at least the configured minimum between blocks, including assignment changes.
-6. **Remaining work.** `estimatedMinutes − completedMinutes` is scheduled and counted as demand.
-7. **Reporting.** Later work is shown separately in the planner and excluded from this week’s totals. A final remainder below 30 minutes can use a short block. Anything in scope that does not fit is listed as unscheduled with its remaining minutes and a
-   reason (`overdue` or `insufficient-time`). Nothing is silently dropped.
-
-**Granularity:** 30-minute slots, with a shorter final block for remaining work such as 15 minutes. A 90-minute assignment receives 90 scheduled minutes when the week
-has room; if only 60 minutes fit, the remaining 30 are reported as unscheduled rather than hidden.
-
-Overlapping commitments are reported as conflicts. Generated study blocks cannot overlap by construction.
-
----
-
-## What-If simulation
-
-A scenario is an immutable list of operations. `applyScenario` returns a new dataset plus an optional
-per-day capacity bonus; the engine runs twice — baseline and simulated — so every comparison number is
-computed. Nothing is written until **Apply scenario** is confirmed, and the dialog lists the pending
-changes first.
-
-Screen-time reductions are capped at the discretionary minutes actually recorded in the last seven
-days. Only whole 30-minute blocks become capacity, and only when the calendar has space. Applying one
-replaces any previously allocated bonus instead of stacking, so time is never double-counted.
-
----
-
-## Workload Pressure
-
-Weights total 100; each factor is normalised to 0–1, weighted, summed and rounded:
-
-| Factor | Weight | Normalisation |
-| --- | --- | --- |
-| Demand vs capacity | 40 | `clamp(remaining minutes / usable capacity, 0, 1)` |
-| Unscheduled coursework | 25 | `unscheduled minutes / required minutes` |
-| Scheduling conflicts | 15 | `min(conflicts, 4) / 4` |
-| Continuous study | 12 | `min(longest session / 180 min, 1)` |
-| Break availability | 8 | `days without a break / study days` |
-
-Bands: **Balanced** 0–33, **Elevated** 34–66, **High** 67–100. This is a planning indicator, not a
-medical or psychological assessment; the UI says so and repeats the formula.
-
----
-
-## Courses, assignments and recurring commitments
-
-- Tasks store a `courseId`; the course name is only a display snapshot. Migration from the previous
-  schema derives one course per distinct name, so no existing assignment loses its grouping.
-- Deleting a course always opens a choice: keep the assignments and unlink them, or delete them too.
-- Archiving hides a course from new assignments while preserving its assignments and history.
-- A recurring commitment repeats weekly on the selected weekdays until an optional end date, with
-  individual dates skippable. Editing saves either the whole series or just that occurrence (which is
-  detached, so other weeks stay unchanged). Deleting asks the same question.
-
----
-
-## Import and export
-
-**JSON** — export includes courses, assignments, commitments, screen time and preferences, plus a
-`schemaVersion`. Import validates the file, previews the counts, and offers **merge** (keeps existing
-records, skips duplicate ids, remaps course links) or **replace** (with an explicit warning). Invalid
-records are skipped and reported; nothing is written before confirmation.
-
-**CSV** — one file per entity, with downloadable templates and downloadable exports.
-
-| File | Required columns | Optional columns |
-| --- | --- | --- |
-| Courses | `name` | `code`, `color`, `instructor`, `semesterStart`, `semesterEnd`, `archived` |
-| Assignments | `title`, `deadline`, `estimatedMinutes` | `course`, `priority`, `description`, `completed`, `completedMinutes` |
-| Commitments | `title`, `start`, `end` | `category`, `notes`, `recurrence`, `weekdays`, `recurrenceUntil` |
-
-Dates accept `yyyy-MM-dd` or `yyyy-MM-dd HH:mm`; weekdays accept `Mon,Wed` or `0–6`. Course references
-are matched by name or code, and an unknown course is reported as a skipped row rather than silently
-creating a duplicate. Rows are validated before the import is confirmed.
-
-**iCalendar (.ics)** is not implemented. It is listed in the roadmap and in the UI. SENTINEL does not
-connect to Google Calendar, Outlook, Canvas or a university portal.
-
----
-
-## Digital habits
-
-- Entries are manual and labelled as such; SENTINEL never reads device usage.
-- Per-app daily goals can be created, edited and deleted; progress uses today’s manual entries and explicitly marks missing data as unknown. Goals persist and travel in JSON backups.
-- Daily average uses recorded days, not a fixed seven; the trend covers the rolling week.
-- "Discretionary" is `social`, `entertainment` and `other`; education and productivity are preserved.
-- Recovered time is hypothetical and is never automatically converted into study time.
-
----
-
-## Maryville wellness dimensions
-
-The Insights page maps each official dimension to the feature that acts on it, with live numbers:
-
-- **Intellectual** — scheduled vs open assignments and planned study time → Smart Planner.
-- **Emotional** — Workload Pressure and unscheduled minutes → Simulation Lab.
-- **Financial** — fixed work hours this week and number of shifts → test another shift.
-- **Physical** — protected sleep window and break opportunities → rest preferences.
-
-No improvement percentages or clinical claims are made.
-
----
-
-## Internationalisation
-
-Five locales ship: **English, Français, Español, Português, 简体中文**. Locale files are typed against
-the English dictionary, so a missing or extra key fails `npm run typecheck`. Dates and numbers use the
-selected locale, and `<html lang>` follows it. Switching language or theme never touches stored data.
-
-Translations were produced during development, not by professional native speakers. A native-speaker
-review of tone and domain terms is recommended before public release.
-
----
-
-## Accessibility and responsiveness
-
-- Labelled controls, visible focus rings, `aria-invalid` with described errors, `aria-live` status.
-- The priority control is a `role="combobox"` + `role="listbox"` widget (arrows, Home/End, Enter,
-  Space, Escape, tab-out); the deadline field is a calendar grid (arrows, PageUp/PageDown, Enter/Space,
-  Escape). Both expand **inline** inside the form, so a modal never treats them as an outside click and
-  no scroll container can clip them. Day keys come from local date parts, never UTC parsing.
-- Radix dialogs trap focus; destructive actions always confirm.
-- Charts expose accessible labels and alternative lists of the underlying numbers.
-- Layouts are designed from 320 px upward; wide calendar content scrolls inside its own container.
-  `prefers-reduced-motion` disables animation.
-
----
-
-## Tests
-
-The current suite includes 146 unit/integration tests in 14 files, deterministic generated workloads,
-recovery/quota/import validation, goals, simulation isolation and locale checks. Playwright runs real
-student workflows against Chromium, with console/runtime errors treated as failures, responsive checks
-and axe WCAG scans. Exact commands, final counts and evidence boundaries are maintained in
-[`docs/HARDENING_ACCEPTANCE.md`](docs/HARDENING_ACCEPTANCE.md).
-
-Run browser tests against `npm run preview` using `PLAYWRIGHT_BASE_URL` to verify the production bundle.
-The production app serves its Inter fonts locally and uses route-level lazy loading. No Google Fonts
-request is required.
-
----
-
-## Demo walkthrough
-
-1. **Settings → Load demo data → confirm** (or the Overview empty-state button).
-2. Review deadlines, workload and today's schedule on **Overview**.
-3. **Smart Planner** — inspect the calendar, click a generated study block to open its assignment,
-   check unscheduled work, then open the **Courses** tab and try archive/delete.
-4. **Simulation Lab → Add a work shift**, e.g. Tuesday 17:00–21:00, and compare; then reset.
-5. **Digital Habits** — check totals, trend and the reduction simulator.
-6. **Wellness Insights** — pressure formula and the four dimensions.
-7. Switch theme and language, reload, and confirm the data is unchanged.
-
-A judged script is in [`docs/HACKATHON_DEMO.md`](docs/HACKATHON_DEMO.md).
-
----
-
-## Documentation
-
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — layers, data model, algorithm, persistence.
-- [`docs/DEVELOPMENT_LIFECYCLE.md`](docs/DEVELOPMENT_LIFECYCLE.md) — planning, changes, testing and AI assistance.
-- [`docs/HACKATHON_DEMO.md`](docs/HACKATHON_DEMO.md) — three-minute presentation.
-- [`docs/HARDENING_ACCEPTANCE.md`](docs/HARDENING_ACCEPTANCE.md) — current acceptance matrix, fixes and release classification.
-- [`docs/INDEPENDENT_AUDIT.md`](docs/INDEPENDENT_AUDIT.md) — independent regression fixes and browser verification.
-- [`docs/RELEASE_AUDIT.md`](docs/RELEASE_AUDIT.md) — what was verified, how, and what remains.
-- [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md) — unsupported and unverified behaviour.
-- [`docs/CODEX_HANDOFF.md`](docs/CODEX_HANDOFF.md) — architecture, commands and prioritized next tasks.
-
----
-
-## Project structure
-
-```
-src/
-  components/
-    common/       page header, cards, empty states, confirm dialog
-    dashboard/    metrics, workload chart, today, deadlines, insight
-    planner/      task, commitment and course dialogs, calendar, lists, courses
-    simulation/   scenario builder, pending changes, comparison, chart
-    habits/       entry dialog, table, charts, reduction simulator
-    insights/     pressure card, insight list, wellness dimensions
-    onboarding/   first-run wizard
-    settings/     JSON/CSV data manager
-    layout/       sidebar, header, mobile drawer, app shell
-    ui/           button, card, field, select, date picker, dialog, tabs, switch, toast
-  hooks/          app store, weekly schedule, locale formatters
-  lib/
-    scheduling/   deterministic engine
-    simulation/   immutable scenarios and comparison
-    analytics/    habits, workload pressure, insights
-    storage/      typed persistence, validation, migration, demo data
-    io/           CSV parsing, validation, templates
-  locales/        en, fr, es, pt, zh-CN
-  pages/          overview, planner, simulation, habits, insights, settings
-  tests/          unit + integration tests
-  types/          shared domain models
+```bash
+npm run typecheck
+npm test
+npm run build
+npm run preview
+# Browser tests require Chromium installed via Playwright:
+npx playwright install chromium
+npm run test:e2e
 ```
 
+Production output is `dist/`; Vercel uses `vercel.json` for client-side route fallback.
+
+## Privacy, limitations and design choices
+
+- **Local-only data:** no login, server backup or cross-device sync. Export a JSON backup before clearing browser data. Local storage is **not encrypted**.
+- **Manual digital habits:** SENTINEL does not read actual phone usage. Missing entries mean **unknown**, not zero.
+- **Fixed commitments vs flexible tasks:** a work shift occupies a fixed interval; an assignment or personal project requires flexible work time. A course is optional.
+- **Honest scheduling:** the chronological heuristic may leave work unscheduled; it does not silently hide impossible plans.
+- **Scope:** no Google Calendar/Canvas integration, automatic timetable PDF, iCalendar sync, travel-time engine, drag-and-drop study blocks or offline service worker.
+- **Accessibility and languages:** EN, FR, ES, PT and Simplified Chinese; automated checks were run, but native-speaker and assistive-technology reviews remain future work.
+
+Read the [complete supported boundaries](docs/KNOWN_LIMITATIONS.md).
+
+## Engineering documentation
+
+- [System architecture and domain model](docs/ARCHITECTURE.md)
+- [Final independent release verification](docs/FINAL_RELEASE_VERIFICATION.md)
+- [Development lifecycle and AI-assistance disclosure](docs/DEVELOPMENT_LIFECYCLE.md)
+- [Demo and judging walkthrough](docs/HACKATHON_DEMO.md)
+- [Known limitations](docs/KNOWN_LIMITATIONS.md)
+
 ---
 
-## Known limitations
+<div align="center">
 
-- Data is local to one browser profile. Export/import is the manual sync path; there is no account or
-  server backup.
-- Schedules are Monday-based. Work due after the seven-day look-ahead is planned when its week is viewed.
-- Study sessions are generated chronologically and cannot be dragged on the calendar; editing a task or
-  its preferences is the supported way to change them.
-- Weekly recurrence only; no monthly/yearly rules and no iCalendar (see roadmap).
-- Workload Pressure is a transparent heuristic, not a validated instrument.
-- Screen-time entries are self-reported; there is no device integration by design.
-- The four non-English locales have not had native-speaker review.
-- Settings provides raw corrupt-data backup downloads, validation and a confirmed merge recovery flow.
-- The full list is in [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md).
+**Students don't need a perfect-looking plan. They need an honest one.**
 
-Latest release-candidate evidence: [Final release verification](docs/FINAL_RELEASE_VERIFICATION.md)
-(150 unit/integration tests, 27 production Chromium tests; exact tested commit and limitations recorded).
+[**Launch SENTINEL 2.0**](https://sentinel-2-delta.vercel.app/)
+
+</div>
