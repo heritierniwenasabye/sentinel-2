@@ -1,4 +1,4 @@
-import { forwardRef, type ComponentPropsWithoutRef, type ElementRef } from 'react';
+import { forwardRef, useRef, type ComponentPropsWithoutRef, type ElementRef } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -11,13 +11,27 @@ export const DialogClose = DialogPrimitive.Close;
 export const DialogContent = forwardRef<
   ElementRef<typeof DialogPrimitive.Content>,
   ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, onEscapeKeyDown, ...props }, ref) => {
+>(({ className, children, onEscapeKeyDown, onCloseAutoFocus, ...props }, ref) => {
   const { t } = useTranslation();
+  const returnFocus = useRef<HTMLElement | null>(null);
+  // Controlled dialogs may open without a Radix Trigger. Remember the actual
+  // opener before the portal takes focus, including edit buttons in lists.
+  const active = typeof document === 'undefined' ? null : document.activeElement;
+  if (active instanceof HTMLElement && active !== document.body && !active.closest('[role="dialog"]')) {
+    returnFocus.current = active;
+  }
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-fade-in" />
       <DialogPrimitive.Content
         ref={ref}
+        onCloseAutoFocus={(event) => {
+          onCloseAutoFocus?.(event);
+          if (!event.defaultPrevented && returnFocus.current?.isConnected) {
+            event.preventDefault();
+            returnFocus.current.focus();
+          }
+        }}
         onEscapeKeyDown={(event) => {
           // Dismiss an inline calendar/listbox before dismissing the unsaved form.
           const target = event.target instanceof Element ? event.target : null;
